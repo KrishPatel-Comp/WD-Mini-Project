@@ -36,7 +36,15 @@ function db(): PDO {
     return $pdo;
 }
 
-// ─── Response helpers ─────────────────────────────────────────────────────
+// ─── Response & Input helpers ─────────────────────────────────────────────
+function get_json_body(): array {
+    $raw = file_get_contents('php://input');
+    if (!$raw) return [];
+    $raw = preg_replace('/^\xEF\xBB\xBF/', '', (string)$raw);
+    $data = json_decode($raw, true);
+    return is_array($data) ? $data : [];
+}
+
 function ok(mixed $data = null, string $message = 'ok'): never {
     echo json_encode(['success' => true, 'message' => $message, 'data' => $data]);
     exit;
@@ -104,4 +112,55 @@ function calc_readiness(array $u): array {
 
 function log_activity(int $id, string $action, string $detail = ''): void {
     db()->prepare('INSERT INTO activity_log(student_id,action,detail) VALUES(?,?,?)')->execute([$id, $action, $detail]);
+}
+
+function ensure_tables(): void {
+    static $done = false;
+    if ($done) return;
+    $done = true;
+    try {
+        db()->exec("
+            CREATE TABLE IF NOT EXISTS application_track (
+              application_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              student_id INT UNSIGNED NOT NULL UNIQUE,
+              status ENUM('Draft','Submitted','Under Review','Documents Pending','Correction Required','Waitlisted','Approved','Rejected') NOT NULL DEFAULT 'Submitted',
+              status_note VARCHAR(255) NULL,
+              submitted_at DATETIME NULL,
+              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              CONSTRAINT fk_application_student FOREIGN KEY (student_id) REFERENCES student_login(student_id) ON DELETE CASCADE
+            ) ENGINE=InnoDB;
+
+            CREATE TABLE IF NOT EXISTS fee_payments (
+              payment_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              student_id INT UNSIGNED NOT NULL,
+              reference VARCHAR(64) NOT NULL UNIQUE,
+              fee_type VARCHAR(60) NOT NULL,
+              amount DECIMAL(10,2) NOT NULL,
+              status ENUM('Paid','Pending','Failed') NOT NULL DEFAULT 'Pending',
+              payment_method VARCHAR(50) DEFAULT 'StroWallet Checkout',
+              paid_at DATETIME NULL,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              CONSTRAINT fk_payment_student FOREIGN KEY (student_id) REFERENCES student_login(student_id) ON DELETE CASCADE
+            ) ENGINE=InnoDB;
+
+            CREATE TABLE IF NOT EXISTS student_notifications (
+              notification_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              student_id INT UNSIGNED NOT NULL,
+              title VARCHAR(120) NOT NULL,
+              message TEXT NOT NULL,
+              type ENUM('info','success','warning','alert') NOT NULL DEFAULT 'info',
+              is_read TINYINT(1) NOT NULL DEFAULT 0,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              CONSTRAINT fk_notification_student FOREIGN KEY (student_id) REFERENCES student_login(student_id) ON DELETE CASCADE
+            ) ENGINE=InnoDB;
+        ");
+    } catch (\Throwable $e) {}
+}
+
+function add_notification(int $student_id, string $title, string $message, string $type = 'info'): void {
+    ensure_tables();
+    try {
+        db()->prepare('INSERT INTO student_notifications(student_id,title,message,type) VALUES(?,?,?,?)')
+            ->execute([$student_id, $title, $message, $type]);
+    } catch (\Throwable $e) {}
 }

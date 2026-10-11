@@ -4,81 +4,146 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Documents · UniBridge Student Portal</title>
-  <meta name="description" content="Upload and track your student documents on UniBridge.">
+  <meta name="description" content="Upload and track your student documents on UniBridge with live verification updates.">
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 
 <div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
 <div class="app-shell">
-  <!-- Sidebar -->
+  <!-- ─── EduAdmin Sidebar ────────────────────────────────────── -->
   <aside class="sidebar" id="sidebar">
-    <a class="brand" href="dashboard.html">
-      <span class="brand-mark">u</span>
-      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
-    </a>
-    <div class="side-label">WORKSPACE</div>
-    <nav>
-      <a class="nav-link" href="dashboard.html"><span class="icon">⌂</span> Overview</a>
-      <a class="nav-link" href="registration.html"><span class="icon">▤</span> Registration</a>
-      <a class="nav-link active" href="documents.html"><span class="icon">↥</span> Documents</a>
-      <a class="nav-link" href="profile.html"><span class="icon">◉</span> My profile</a>
-    </nav>
+    <div class="sidebar-brand-wrap">
+      <button class="brand-toggle-btn" id="sidebar-collapse-btn" aria-label="Toggle Navigation">☰</button>
+      <a class="brand" href="dashboard.html">
+        <span class="brand-mark">U</span>
+        <span class="brand-name">EduAdmin<small>STUDENT PORTAL</small></span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-container">
+      <div class="side-label">DASHBOARD & APPS</div>
+      <a class="nav-link" href="dashboard.html">
+        <span class="icon">⌂</span>
+        <span>Dashboard</span>
+      </a>
+      <div class="nav-sub">
+        <a class="nav-sub-item" href="dashboard.html">Overview</a>
+        <a class="nav-sub-item" href="tracking.html">Application Tracking</a>
+        <a class="nav-sub-item" href="payments.html">Payment History</a>
+      </div>
+
+      <div class="side-label">ADMISSIONS & FINANCE</div>
+      <a class="nav-link" href="tracking.html">
+        <span class="icon">📋</span>
+        <span>Application Tracking</span>
+      </a>
+      <a class="nav-link" href="payments.html">
+        <span class="icon">💳</span>
+        <span>Fee Payment</span>
+      </a>
+      <a class="nav-link" href="registration.html">
+        <span class="icon">▤</span>
+        <span>Registration</span>
+      </a>
+      <a class="nav-link active" href="documents.html">
+        <span class="icon">↥</span>
+        <span>Upload Documents</span>
+      </a>
+      <a class="nav-link" href="profile.html">
+        <span class="icon">◉</span>
+        <span>My Profile</span>
+      </a>
+
+      <div class="side-label">ACCOUNT & SETTINGS</div>
+      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
+        <span class="icon">↪</span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+
     <div class="sidebar-bottom">
       <div class="help-card">
-        <span class="help-icon">✦</span><b>Need a hand?</b>
-        <p>Your onboarding guide is here to help.</p>
-        <a href="mailto:admissions@unibridge.edu">Contact support ↗</a>
+        <b>Need Assistance?</b>
+        <p>Our student helpdesk is available 24/7 to help you onboard.</p>
+        <a href="mailto:admissions@unibridge.edu">Contact Support ↗</a>
       </div>
-      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
-        <span class="icon">↪</span> Sign out
-      </button>
     </div>
   </aside>
 
+  <!-- ─── Main Content Shell ──────────────────────────────────── -->
   <div class="main-shell">
     <header class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
-        <div class="crumb">Student portal <span>/</span> Documents</div>
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open sidebar">☰</button>
+        <div class="quick-pills">
+          <div class="quick-pill" title="Chat & Support">💬</div>
+          <div class="quick-pill" title="Layout Options">▦</div>
+          <div class="quick-pill" title="Tasks & Checklist">☑</div>
+        </div>
+        <div class="crumb">Student Portal <span>/</span> <b>Documents</b></div>
       </div>
-      <div class="top-user">
-        <span class="online-dot"></span>
-        <span id="topbar-name">—</span>
-        <span class="avatar" id="topbar-avatar">S</span>
+
+      <div class="topbar-right">
+        <div class="search-box">
+          <input type="text" placeholder="Search records..." aria-label="Search">
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="top-action-btn" title="Notifications">
+          <span>🔔</span>
+          <span class="badge-dot"></span>
+        </div>
+        <div class="top-user" onclick="window.location.href='profile.html'">
+          <span class="avatar" id="topbar-avatar">S</span>
+          <div class="user-meta">
+            <strong id="topbar-name">—</strong>
+            <small id="topbar-role">Student</small>
+          </div>
+        </div>
       </div>
     </header>
 
     <main class="content">
-      <div class="eyebrow">DOCUMENT CENTRE</div>
-      <h1 class="page-title">A clear view of every upload.</h1>
-      <p class="subhead">Upload what you need and follow each document from upload to approval.</p>
-
-      <div class="notice">
-        Accepted formats: PDF, JPG, PNG · Maximum file size: 5 MB · Replacing a document sends it back for review.
+      <div class="section-head">
+        <div>
+          <h2>Document Centre & Verification</h2>
+          <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Upload required documents and follow real-time verification status from the admissions committee.</p>
+        </div>
+        <div class="section-actions">
+          <span class="pill active">Max File: 5 MB</span>
+        </div>
       </div>
 
       <div id="global-toast"></div>
 
-      <div class="grid doc-grid" id="doc-grid">
-        <!-- Populated by JS -->
+      <!-- Upload Cards Grid (Clean layout, no overlapping) -->
+      <div class="doc-card-grid" id="doc-grid">
+        <!-- Rendered by JS -->
       </div>
 
-      <!-- Document record table -->
-      <section class="card" style="margin-top:18px">
+      <!-- Document Record Table -->
+      <section class="card" style="margin-top:20px">
         <div class="card-head">
-          <h2>Document record</h2>
-          <span class="muted" style="font-size:11px">Live status from your document track</span>
+          <h3>Verification Audit Trail</h3>
+          <span style="font-size:12px;color:var(--text-muted)">Live records from database</span>
         </div>
-        <table class="table">
-          <thead>
-            <tr><th>Document</th><th>Uploaded</th><th>Status</th></tr>
-          </thead>
-          <tbody id="doc-table-body">
-            <tr><td colspan="3" class="empty">Loading…</td></tr>
-          </tbody>
-        </table>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Document Type</th>
+                <th>File Name</th>
+                <th>Uploaded At</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="doc-table-body">
+              <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted)">Loading records…</td></tr>
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
   </div>
@@ -90,24 +155,39 @@
 
   initSidebarToggle();
 
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const sidebar = document.getElementById('sidebar');
+  if (backdrop && sidebar) {
+    backdrop.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('active');
+    });
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+      backdrop.classList.toggle('active', sidebar.classList.contains('open'));
+    });
+  }
+
   const DOC_TYPES = {
-    photo:                'Profile photo',
-    identity:             'Identity proof',
-    marksheet:            'Latest marksheet',
-    transfer_certificate: 'Transfer certificate',
+    photo:                'Profile Photo',
+    identity:             'Identity Proof',
+    marksheet:            'Academic Marksheet',
+    transfer_certificate: 'Transfer Certificate',
   };
+
   const DOC_HELP = {
-    photo:                'A recent, clear passport-style image.',
-    identity:             'Government-issued ID or Aadhaar card.',
-    marksheet:            'Your latest academic marksheet.',
-    transfer_certificate: 'Transfer or leaving certificate, if applicable.',
+    photo:                'Recent color passport-size photograph (JPG or PNG).',
+    identity:             'Government photo ID or Aadhaar card copy (PDF or JPG).',
+    marksheet:            'Final examination marksheet or official transcript (PDF).',
+    transfer_certificate: 'Original school/college transfer certificate (PDF or JPG).',
   };
 
   async function init() {
     const session = await requireAuth(api);
     if (!session) return;
-    document.getElementById('topbar-name').textContent = session.user?.full_name || '—';
-    document.getElementById('topbar-avatar').textContent = (session.user?.full_name || 'S')[0].toUpperCase();
+    const fullName = session.user?.full_name || session.user?.admission_no || 'Student';
+    document.getElementById('topbar-name').textContent = fullName;
+    document.getElementById('topbar-avatar').textContent = (fullName[0] || 'S').toUpperCase();
+    document.getElementById('topbar-role').textContent = session.user?.admission_no || 'Student';
 
     await loadDocuments();
     hideLoader();
@@ -125,23 +205,39 @@
     grid.innerHTML = Object.entries(DOC_TYPES).map(([key, title]) => {
       const d = docs[key];
       const status = d?.status || 'Not uploaded';
-      const statusCls = status.toLowerCase().replace(' ', '-');
       return `
-        <article class="card doc-card" id="card-${key}">
-          <span class="pill ${statusCls === 'not-uploaded' ? '' : statusCls} doc-status">${status}</span>
-          <h3>${title}</h3>
-          <p>${DOC_HELP[key]}</p>
-          ${d ? `<p><b>${d.original_name}</b><br><small>Uploaded ${fmtDate(d.uploaded_at)}</small></p>` : ''}
+        <article class="doc-upload-card" id="card-${key}">
+          <!-- Clean header with flex separation - NO absolute overlap -->
+          <div class="doc-card-header">
+            <div class="doc-card-title-group">
+              <h3>${title}</h3>
+              <p>${DOC_HELP[key]}</p>
+            </div>
+            <div>
+              ${pillHTML(status)}
+            </div>
+          </div>
+
+          ${d ? `
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:12.5px">
+              <b>📄 ${d.original_name}</b>
+              <div style="color:var(--text-muted);font-size:11.5px;margin-top:2px">Uploaded on ${fmtDate(d.uploaded_at)}</div>
+            </div>
+          ` : ''}
+
           <form class="upload-form" data-type="${key}">
-            <input class="file-input" type="file" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
-            <div class="button-row">
-              <button class="btn btn-light upload-btn" type="submit">${d ? 'Replace document' : 'Upload document'} ↑</button>
+            <div class="file-input-wrapper">
+              <input class="file-input" type="file" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
+            </div>
+            <div class="button-row" style="margin-top:14px">
+              <button class="btn btn-primary btn-sm upload-btn" type="submit">
+                ${d ? 'Replace Document ↑' : 'Upload Document ↑'}
+              </button>
             </div>
           </form>
         </article>`;
     }).join('');
 
-    // Attach upload handlers
     document.querySelectorAll('.upload-form').forEach(form => {
       form.addEventListener('submit', handleUpload);
     });
@@ -151,12 +247,13 @@
     const tbody = document.getElementById('doc-table-body');
     const entries = Object.values(docs);
     if (entries.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="3" class="empty">No documents uploaded yet.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-muted)">No documents uploaded yet.</td></tr>`;
       return;
     }
     tbody.innerHTML = entries.map(d => `
       <tr>
-        <td>${DOC_TYPES[d.document_type] || d.document_type}</td>
+        <td><b>${DOC_TYPES[d.document_type] || d.document_type}</b></td>
+        <td><code>${d.original_name}</code></td>
         <td>${fmtDate(d.uploaded_at)}</td>
         <td>${pillHTML(d.status)}</td>
       </tr>`).join('');
@@ -164,36 +261,45 @@
 
   async function handleUpload(e) {
     e.preventDefault();
-    const form     = e.currentTarget;
-    const type     = form.dataset.type;
+    const form      = e.currentTarget;
+    const type      = form.dataset.type;
     const fileInput = form.querySelector('input[type="file"]');
-    const btn      = form.querySelector('.upload-btn');
+    const btn       = form.querySelector('.upload-btn');
 
-    if (!fileInput.files[0]) { showToast('Please choose a file first.', 'error'); return; }
+    if (!fileInput.files.length) {
+      showToast('Please select a file to upload.', 'error');
+      return;
+    }
+
+    const file = fileInput.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('File size must be under 5 MB.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Uploading…';
 
     const fd = new FormData();
     fd.append('document_type', type);
-    fd.append('document', fileInput.files[0]);
-
-    const origText = btn.innerHTML;
-    btn.innerHTML = '<span class="spinner"></span> Uploading…';
-    btn.disabled = true;
+    fd.append('document', file);
 
     const res = await api.upload(fd);
-
-    btn.innerHTML = origText;
     btn.disabled = false;
+    btn.textContent = 'Upload Document ↑';
 
     if (res.success) {
       showToast(res.message, 'success');
-      await loadDocuments(); // refresh
+      form.reset();
+      await loadDocuments();
     } else {
       showToast(res.message, 'error');
     }
   }
 
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await api.logout(); window.location.href = 'login.html';
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    await api.logout();
+    window.location.href = 'login.html';
   });
 
   init();

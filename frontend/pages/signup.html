@@ -14,47 +14,57 @@
 </div>
 
 <div class="public-shell">
-  <div style="width:100%;max-width:900px">
-    <a class="brand public-brand" href="login.html">
-      <span class="brand-mark">u</span>
-      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
-    </a>
-
+  <div class="auth-container">
     <div class="auth-layout">
+      <!-- Left Branded Panel (EduAdmin Navy) -->
       <section class="auth-copy">
-        <div class="eyebrow">YOUR NEXT CHAPTER STARTS HERE</div>
-        <h1>One bridge.<br>All the way to<br>your first day.</h1>
-        <p>Get your student journey in order, one small step at a time.</p>
-        <div class="auth-points">
-          <span>✓ Track registration progress</span>
-          <span>✓ Upload and follow documents</span>
-          <span>✓ Keep your student details in one place</span>
+        <a class="brand" href="login.html" style="margin-bottom:28px">
+          <span class="brand-mark">U</span>
+          <span class="brand-name">EduAdmin<small>STUDENT PORTAL</small></span>
+        </a>
+
+        <div class="auth-copy-main">
+          <h1>Start your academic enrolment.</h1>
+          <p>Register once to access application tracking, fee payments, document verification, and orientation milestones.</p>
+
+          <div class="auth-points">
+            <div class="auth-point"><span>✓</span> Instant applicant registration number</div>
+            <div class="auth-point"><span>✓</span> 3-stage application review process</div>
+            <div class="auth-point"><span>✓</span> Official downloadable fee receipts</div>
+          </div>
+        </div>
+
+        <div style="font-size:11.5px;color:#7084a4;margin-top:28px">
+          UniBridge Academic Services © 2026
         </div>
       </section>
 
-      <section class="auth-panel">
-        <h2>Create your account</h2>
-        <p>Start your student onboarding journey.</p>
+      <!-- Right Form Panel -->
+      <section class="auth-panel" style="padding:40px">
+        <h2>Create Student Account</h2>
+        <p>Fill out the details below to initialize your admissions record.</p>
 
         <div id="form-toast"></div>
 
         <form id="signup-form" novalidate>
-          <div class="field">
-            <label for="full_name">Full name</label>
-            <input id="full_name" name="full_name" required autocomplete="name" placeholder="Your full name">
+          <div class="field" style="margin-bottom:12px">
+            <label for="full_name">Legal Full Name *</label>
+            <input id="full_name" name="full_name" required autocomplete="name" placeholder="Full Name as on certificate">
           </div>
-          <div class="field">
-            <label for="phone">Mobile number</label>
-            <input id="phone" name="phone" required type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+          <div class="form-grid" style="margin-bottom:12px">
+            <div class="field">
+              <label for="phone">Mobile Number *</label>
+              <input id="phone" name="phone" required type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile">
+            </div>
+            <div class="field">
+              <label for="email">Email Address *</label>
+              <input id="email" name="email" required type="email" autocomplete="email" placeholder="name@email.com">
+            </div>
           </div>
-          <div class="field">
-            <label for="email">Email address</label>
-            <input id="email" name="email" required type="email" autocomplete="email">
-          </div>
-          <div class="field">
-            <label for="course">Course</label>
+          <div class="field" style="margin-bottom:12px">
+            <label for="course">Program / Course *</label>
             <select id="course" name="course" required>
-              <option value="">Choose your course</option>
+              <option value="">Select your program</option>
               <option>B.Sc. Computer Science</option>
               <option>BCA</option>
               <option>B.Com</option>
@@ -64,28 +74,27 @@
               <option>Other</option>
             </select>
           </div>
-          <div class="field">
-            <label>Admission ID</label>
-            <input disabled value="Generated automatically after account creation">
-            <small>Your unique UniBridge ID will appear after registration.</small>
-          </div>
-          <div class="form-grid">
+          <div class="form-grid" style="margin-bottom:12px">
             <div class="field">
-              <label for="password">Password</label>
-              <input id="password" class="password-field" name="password" required minlength="8" type="password">
+              <label for="password">Password (8+ chars) *</label>
+              <input id="password" class="password-field" name="password" required minlength="8" type="password" placeholder="••••••••">
             </div>
             <div class="field">
-              <label for="confirm_password">Confirm password</label>
-              <input id="confirm_password" class="password-field" name="confirm_password" required minlength="8" type="password">
+              <label for="confirm_password">Confirm Password *</label>
+              <input id="confirm_password" class="password-field" name="confirm_password" required minlength="8" type="password" placeholder="••••••••">
             </div>
           </div>
-          <label class="show-password" style="margin-bottom:14px">
-            <input type="checkbox" id="show-pw"> Show passwords
+          <label style="font-size:12.5px;color:var(--text-muted);display:flex;align-items:center;gap:6px;cursor:pointer;margin-bottom:18px">
+            <input type="checkbox" id="show-pw"> Show password characters
           </label>
-          <button class="btn" id="signup-btn" type="submit" style="width:100%">Create student account →</button>
+          <button class="btn btn-primary" id="signup-btn" type="submit" style="width:100%;padding:11px">
+            Create Student Account →
+          </button>
         </form>
 
-        <div class="auth-foot">Already registered? <a href="login.html">Sign in</a></div>
+        <div class="auth-foot">
+          Already have an account? <a href="login.html" style="font-weight:700">Sign in</a>
+        </div>
       </section>
     </div>
   </div>
@@ -93,54 +102,59 @@
 
 <script type="module">
   import { api } from '../js/api.js';
-  import { redirectIfLoggedIn, setLoading, hideLoader } from '../js/utils.js';
+  import { redirectIfLoggedIn, hideLoader, showToast } from '../js/utils.js';
 
   async function init() {
     await redirectIfLoggedIn(api);
     hideLoader();
+
+    const form      = document.getElementById('signup-form');
+    const btn       = document.getElementById('signup-btn');
+    const toastArea = document.getElementById('form-toast');
+    const showPw    = document.getElementById('show-pw');
+
+    showPw?.addEventListener('change', () => {
+      document.querySelectorAll('.password-field').forEach(input => {
+        input.type = showPw.checked ? 'text' : 'password';
+      });
+    });
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const name  = form.full_name.value.trim();
+      const phone = form.phone.value.trim();
+      const email = form.email.value.trim();
+      const course = form.course.value;
+      const pass  = form.password.value;
+      const cpass = form.confirm_password.value;
+
+      if (!name || !phone || !email || !course || !pass) {
+        toastArea.innerHTML = `<div class="toast error">Please fill in all required fields.</div>`;
+        return;
+      }
+
+      if (pass !== cpass) {
+        toastArea.innerHTML = `<div class="toast error">Passwords do not match.</div>`;
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Creating Account…';
+
+      const res = await api.signup({ full_name: name, phone, email, course, password: pass, confirm_password: cpass });
+      btn.disabled = false;
+      btn.textContent = 'Create Student Account →';
+
+      if (res.success) {
+        showToast(res.message || 'Account created successfully!', 'success');
+        window.location.href = res.data?.redirect || 'dashboard.html';
+      } else {
+        toastArea.innerHTML = `<div class="toast error">${res.message}</div>`;
+      }
+    });
   }
+
   init();
-
-  // Show/hide password toggle
-  document.getElementById('show-pw').addEventListener('change', e => {
-    const type = e.target.checked ? 'text' : 'password';
-    document.querySelectorAll('.password-field').forEach(f => f.type = type);
-  });
-
-  const form  = document.getElementById('signup-form');
-  const btn   = document.getElementById('signup-btn');
-  const toast = document.getElementById('form-toast');
-
-  function showMsg(msg, type = 'error') {
-    toast.innerHTML = `<div class="toast ${type}">${msg}</div>`;
-  }
-
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    toast.innerHTML = '';
-    const data = {
-      full_name:        form.full_name.value.trim(),
-      phone:            form.phone.value.trim(),
-      email:            form.email.value.trim(),
-      course:           form.course.value,
-      password:         form.password.value,
-      confirm_password: form.confirm_password.value,
-    };
-    if (!data.full_name || !data.email || !data.course || !data.phone || !data.password) {
-      showMsg('Please fill in all required fields.'); return;
-    }
-
-    setLoading(btn, true);
-    const res = await api.signup(data);
-    setLoading(btn, false);
-
-    if (res.success) {
-      showMsg(`Account created! Admission ID: <b>${res.data.admission_no}</b>`, 'success');
-      setTimeout(() => window.location.href = res.data.redirect, 1200);
-    } else {
-      showMsg(res.message);
-    }
-  });
 </script>
 </body>
 </html>

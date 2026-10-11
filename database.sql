@@ -59,4 +59,39 @@ CREATE TABLE activity_log (
   CONSTRAINT fk_activity_student FOREIGN KEY (student_id) REFERENCES student_login(student_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS application_track (
+  application_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  student_id INT UNSIGNED NOT NULL UNIQUE,
+  status ENUM('Draft','Submitted','Under Review','Documents Pending','Correction Required','Waitlisted','Approved','Rejected') NOT NULL DEFAULT 'Submitted',
+  status_note VARCHAR(255) NULL,
+  submitted_at DATETIME NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_application_student FOREIGN KEY (student_id) REFERENCES student_login(student_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS fee_payments (
+  payment_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  student_id INT UNSIGNED NOT NULL,
+  reference VARCHAR(64) NOT NULL UNIQUE,
+  fee_type VARCHAR(60) NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  status ENUM('Paid','Pending','Failed') NOT NULL DEFAULT 'Pending',
+  payment_method VARCHAR(50) DEFAULT 'StroWallet Checkout',
+  paid_at DATETIME NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_payment_student FOREIGN KEY (student_id) REFERENCES student_login(student_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS student_notifications (
+  notification_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  student_id INT UNSIGNED NOT NULL,
+  title VARCHAR(120) NOT NULL,
+  message TEXT NOT NULL,
+  type ENUM('info','success','warning','alert') NOT NULL DEFAULT 'info',
+  is_read TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_notification_student FOREIGN KEY (student_id) REFERENCES student_login(student_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 -- Create your own student account through signup.php. Passwords are intentionally never stored in plain text.
+

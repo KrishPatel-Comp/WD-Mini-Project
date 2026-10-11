@@ -24,7 +24,7 @@ if ($method === 'GET' && $action === 'me') {
 
 // ── POST: login ───────────────────────────────────────────────────────────
 if ($method === 'POST' && $action === 'login') {
-    $body  = json_decode(file_get_contents('php://input'), true) ?? [];
+    $body  = get_json_body();
     $key   = trim($body['identity'] ?? '');
     $pass  = $body['password'] ?? '';
     if (!$key || !$pass) fail('Please enter your admission number / email and password.');
@@ -40,7 +40,7 @@ if ($method === 'POST' && $action === 'login') {
 
 // ── POST: signup ──────────────────────────────────────────────────────────
 if ($method === 'POST' && $action === 'signup') {
-    $body   = json_decode(file_get_contents('php://input'), true) ?? [];
+    $body   = get_json_body();
     $name   = trim($body['full_name'] ?? '');
     $email  = strtolower(trim($body['email'] ?? ''));
     $course = trim($body['course'] ?? '');
@@ -52,7 +52,7 @@ if ($method === 'POST' && $action === 'signup') {
     if (!$course)                                        fail('Please select your course.');
     if (!preg_match('/^[0-9]{10}$/', $phone))            fail('Mobile number must be exactly 10 digits.');
     if (strlen($pass) < 8)                               fail('Password must be at least 8 characters.');
-    if ($pass !== $cpass)                                fail('Passwords do not match.');
+    if (isset($body['confirm_password']) && $pass !== $cpass) fail('Passwords do not match.');
     try {
         $pdo = db();
         $pdo->beginTransaction();

@@ -10,88 +10,196 @@
 <body>
 
 <div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
 <div class="app-shell">
-  <!-- Sidebar -->
+  <!-- ─── EduAdmin Sidebar ────────────────────────────────────── -->
   <aside class="sidebar" id="sidebar">
-    <a class="brand" href="dashboard.html">
-      <span class="brand-mark">u</span>
-      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
-    </a>
-    <div class="side-label">WORKSPACE</div>
-    <nav>
-      <a class="nav-link" href="dashboard.html"><span class="icon">⌂</span> Overview</a>
-      <a class="nav-link" href="registration.html"><span class="icon">▤</span> Registration</a>
-      <a class="nav-link" href="documents.html"><span class="icon">↥</span> Documents</a>
-      <a class="nav-link active" href="profile.html"><span class="icon">◉</span> My profile</a>
-    </nav>
+    <div class="sidebar-brand-wrap">
+      <button class="brand-toggle-btn" id="sidebar-collapse-btn" aria-label="Toggle Navigation">☰</button>
+      <a class="brand" href="dashboard.html">
+        <span class="brand-mark">U</span>
+        <span class="brand-name">EduAdmin<small>STUDENT PORTAL</small></span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-container">
+      <div class="side-label">DASHBOARD & APPS</div>
+      <a class="nav-link" href="dashboard.html">
+        <span class="icon">⌂</span>
+        <span>Dashboard</span>
+      </a>
+      <div class="nav-sub">
+        <a class="nav-sub-item" href="dashboard.html">Overview</a>
+        <a class="nav-sub-item" href="tracking.html">Application Tracking</a>
+        <a class="nav-sub-item" href="payments.html">Payment History</a>
+      </div>
+
+      <div class="side-label">ADMISSIONS & FINANCE</div>
+      <a class="nav-link" href="tracking.html">
+        <span class="icon">📋</span>
+        <span>Application Tracking</span>
+      </a>
+      <a class="nav-link" href="payments.html">
+        <span class="icon">💳</span>
+        <span>Fee Payment</span>
+      </a>
+      <a class="nav-link" href="registration.html">
+        <span class="icon">▤</span>
+        <span>Registration</span>
+      </a>
+      <a class="nav-link" href="documents.html">
+        <span class="icon">↥</span>
+        <span>Upload Documents</span>
+      </a>
+      <a class="nav-link active" href="profile.html">
+        <span class="icon">◉</span>
+        <span>My Profile</span>
+      </a>
+
+      <div class="side-label">ACCOUNT & SETTINGS</div>
+      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
+        <span class="icon">↪</span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+
     <div class="sidebar-bottom">
       <div class="help-card">
-        <span class="help-icon">✦</span><b>Need a hand?</b>
-        <p>Your onboarding guide is here to help.</p>
-        <a href="mailto:admissions@unibridge.edu">Contact support ↗</a>
+        <b>Need Assistance?</b>
+        <p>Our student helpdesk is available 24/7 to help you onboard.</p>
+        <a href="mailto:admissions@unibridge.edu">Contact Support ↗</a>
       </div>
-      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
-        <span class="icon">↪</span> Sign out
-      </button>
     </div>
   </aside>
 
+  <!-- ─── Main Shell ──────────────────────────────────────────── -->
   <div class="main-shell">
     <header class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
-        <div class="crumb">Student portal <span>/</span> My profile</div>
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open sidebar">☰</button>
+        <div class="quick-pills">
+          <div class="quick-pill" title="Chat & Support">💬</div>
+          <div class="quick-pill" title="Layout Options">▦</div>
+          <div class="quick-pill" title="Tasks & Checklist">☑</div>
+        </div>
+        <div class="crumb">Student Portal <span>/</span> <b>My Profile</b></div>
       </div>
-      <div class="top-user">
-        <span class="online-dot"></span>
-        <span id="topbar-name">—</span>
-        <span class="avatar" id="topbar-avatar">S</span>
+
+      <div class="topbar-right">
+        <div class="search-box">
+          <input type="text" placeholder="Search..." aria-label="Search">
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="top-action-btn" title="Notifications">
+          <span>🔔</span>
+          <span class="badge-dot"></span>
+        </div>
+        <div class="top-user">
+          <span class="avatar" id="topbar-avatar">S</span>
+          <div class="user-meta">
+            <strong id="topbar-name">—</strong>
+            <small id="topbar-role">Student</small>
+          </div>
+        </div>
       </div>
     </header>
 
     <main class="content">
-      <div class="eyebrow">MY PROFILE</div>
-      <h1 class="page-title">Keep your details current.</h1>
-      <p class="subhead">These details are used by the admissions team while preparing your student record.</p>
+      <div class="section-head">
+        <div>
+          <h2>Student Profile Details</h2>
+          <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Official student profile used across the registrar office, library, and campus ID portal.</p>
+        </div>
+        <div class="section-actions">
+          <span class="pill active" id="profile-pct">—% Complete</span>
+        </div>
+      </div>
 
       <div id="form-toast"></div>
 
-      <div class="grid two-col" style="margin-top:22px">
-        <form class="card" id="profile-form" novalidate>
+      <div class="details-grid">
+        <!-- Edit Profile Form -->
+        <form class="card form-card" id="profile-form" novalidate>
           <div class="card-head">
-            <h2>Personal &amp; contact details</h2>
-            <span class="pill approved" id="profile-pct">—% complete</span>
+            <h3>Personal & Contact Records</h3>
           </div>
           <div class="form-grid">
-            <div class="field"><label>Full name</label><input name="full_name" required></div>
-            <div class="field"><label>Mobile number</label><input name="phone" required></div>
-            <div class="field full">
-              <label>Email address</label>
-              <input id="email-display" disabled>
-              <small>Email changes require admission support.</small>
+            <div class="field">
+              <label>Full Name</label>
+              <input name="full_name" required placeholder="Legal full name">
             </div>
-            <div class="field full"><label>Address</label><textarea name="address"></textarea></div>
-            <div class="field"><label>City</label><input name="city"></div>
-            <div class="field"><label>State</label><input name="state"></div>
-            <div class="field"><label>Postal code</label><input name="postal_code"></div>
-            <div class="field"><label>Guardian name</label><input name="guardian_name"></div>
-            <div class="field"><label>Guardian mobile</label><input name="guardian_phone"></div>
+            <div class="field">
+              <label>Primary Phone</label>
+              <input name="phone" required placeholder="Contact number">
+            </div>
+            <div class="field full">
+              <label>Registered University Email</label>
+              <input id="email-display" disabled>
+              <small>Email change requests require contacting Admissions Support.</small>
+            </div>
+            <div class="field full">
+              <label>Permanent Residential Address</label>
+              <textarea name="address" placeholder="Address"></textarea>
+            </div>
+            <div class="field">
+              <label>City</label>
+              <input name="city" placeholder="City">
+            </div>
+            <div class="field">
+              <label>State</label>
+              <input name="state" placeholder="State">
+            </div>
+            <div class="field">
+              <label>Postal Code</label>
+              <input name="postal_code" placeholder="Postal Code">
+            </div>
+            <div class="field">
+              <label>Guardian / Parent Name</label>
+              <input name="guardian_name" placeholder="Guardian Name">
+            </div>
+            <div class="field full">
+              <label>Guardian Emergency Phone</label>
+              <input name="guardian_phone" placeholder="Guardian Phone">
+            </div>
           </div>
           <div class="button-row">
-            <button class="btn" id="save-btn" type="submit">Save profile changes</button>
+            <button class="btn btn-primary" id="save-btn" type="submit">Save Changes ✓</button>
           </div>
         </form>
 
+        <!-- Official Academic Record Snapshot -->
         <section class="card">
-          <div class="card-head"><h2>Student record</h2></div>
-          <div class="activity">
-            <div class="activity-row"><div><small class="muted">Admission number</small><b id="rec-admission" style="display:block;margin-top:5px">—</b></div></div>
-            <div class="activity-row"><div><small class="muted">Course</small><b id="rec-course" style="display:block;margin-top:5px">—</b></div></div>
-            <div class="activity-row"><div><small class="muted">Admission year</small><b id="rec-year" style="display:block;margin-top:5px">—</b></div></div>
+          <div class="card-head">
+            <h3>Academic Snapshot</h3>
           </div>
-          <div class="notice" style="margin-top:16px">
-            Your login account is secured separately from your profile details. Use "Forgot password" from the sign-in page if you need to reset access.
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-icon-bubble">🆔</div>
+              <div class="activity-meta">
+                <b>Admission Number</b>
+                <small id="rec-admission" style="font-size:13px;font-weight:600;color:var(--text-main)">—</small>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon-bubble">🎓</div>
+              <div class="activity-meta">
+                <b>Enrolled Course</b>
+                <small id="rec-course" style="font-size:13px;font-weight:600;color:var(--text-main)">—</small>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon-bubble">📅</div>
+              <div class="activity-meta">
+                <b>Enrolment Batch Year</b>
+                <small id="rec-year" style="font-size:13px;font-weight:600;color:var(--text-main)">—</small>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:var(--radius-md);padding:14px;margin-top:20px;font-size:12.5px;color:var(--text-body);line-height:1.5">
+            <b>🔒 Security Note:</b><br>
+            Your login password is encrypted separately. To change your login password, submit a request via the password reset workflow.
           </div>
         </section>
       </div>
@@ -101,16 +209,24 @@
 
 <script type="module">
   import { api } from '../js/api.js';
-  import { requireAuth, hideLoader, initSidebarToggle, setLoading, fillForm } from '../js/utils.js';
+  import { requireAuth, hideLoader, initSidebarToggle, fillForm, formData, showToast } from '../js/utils.js';
 
   initSidebarToggle();
 
-  const toast   = document.getElementById('form-toast');
-  const saveBtn = document.getElementById('save-btn');
-
-  function showMsg(msg, type = 'success') {
-    toast.innerHTML = `<div class="toast ${type}">${msg}</div>`;
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const sidebar = document.getElementById('sidebar');
+  if (backdrop && sidebar) {
+    backdrop.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('active');
+    });
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+      backdrop.classList.toggle('active', sidebar.classList.contains('open'));
+    });
   }
+
+  const form    = document.getElementById('profile-form');
+  const saveBtn = document.getElementById('save-btn');
 
   async function init() {
     const session = await requireAuth(api);
@@ -120,39 +236,41 @@
     if (!res.success) return;
 
     const { user: u, readiness: r } = res.data;
-    document.getElementById('topbar-name').textContent = u.full_name || u.admission_no;
-    document.getElementById('topbar-avatar').textContent = (u.full_name || 'S')[0].toUpperCase();
-    document.getElementById('email-display').value = u.email || '';
-    document.getElementById('profile-pct').textContent = `${r.profile}% complete`;
-    document.getElementById('rec-admission').textContent = u.admission_no || '—';
-    document.getElementById('rec-course').textContent    = u.course || '—';
-    document.getElementById('rec-year').textContent      = u.admission_year || '—';
+    const fullName = u.full_name || u.admission_no || 'Student';
 
-    fillForm(document.getElementById('profile-form'), u);
+    document.getElementById('topbar-name').textContent = fullName;
+    document.getElementById('topbar-avatar').textContent = (fullName[0] || 'S').toUpperCase();
+    document.getElementById('topbar-role').textContent = u.admission_no || 'Student';
+
+    fillForm(form, u);
+    document.getElementById('email-display').value = u.email || '—';
+    document.getElementById('profile-pct').textContent = `${r.profile}% Complete`;
+    document.getElementById('rec-admission').textContent = u.admission_no || '—';
+    document.getElementById('rec-course').textContent = u.course || '—';
+    document.getElementById('rec-year').textContent = u.admission_year || '—';
   }
 
-  document.getElementById('profile-form').addEventListener('submit', async e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    toast.innerHTML = '';
-    const form = e.currentTarget;
-    const data = {};
-    form.querySelectorAll('input:not([disabled]), textarea').forEach(el => {
-      if (el.name) data[el.name] = el.value;
-    });
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
 
-    setLoading(saveBtn, true);
+    const data = formData(form);
     const res = await api.saveProfile(data);
-    setLoading(saveBtn, false);
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Changes ✓';
 
-    showMsg(res.message, res.success ? 'success' : 'error');
     if (res.success) {
-      document.getElementById('topbar-name').textContent = data.full_name || '—';
-      document.getElementById('topbar-avatar').textContent = (data.full_name || 'S')[0].toUpperCase();
+      showToast('Profile updated successfully.', 'success');
+      document.getElementById('topbar-name').textContent = data.full_name || 'Student';
+    } else {
+      showToast(res.message, 'error');
     }
   });
 
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await api.logout(); window.location.href = 'login.html';
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    await api.logout();
+    window.location.href = 'login.html';
   });
 
   init();

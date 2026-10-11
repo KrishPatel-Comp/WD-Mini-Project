@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Application Tracking · UniBridge Student Portal</title>
+  <meta name="description" content="Track your university admission application status, stage timeline, document compliance, and official notifications.">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+<div class="app-shell">
+  <!-- ─── EduAdmin Sidebar ────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand-wrap">
+      <button class="brand-toggle-btn" id="sidebar-collapse-btn" aria-label="Toggle Navigation">☰</button>
+      <a class="brand" href="dashboard.html">
+        <span class="brand-mark">U</span>
+        <span class="brand-name">EduAdmin<small>STUDENT PORTAL</small></span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-container">
+      <div class="side-label">DASHBOARD & APPS</div>
+      <a class="nav-link" href="dashboard.html">
+        <span class="icon">⌂</span>
+        <span>Dashboard</span>
+      </a>
+      <div class="nav-sub">
+        <a class="nav-sub-item" href="dashboard.html">Overview</a>
+        <a class="nav-sub-item active" href="tracking.html">Application Tracking</a>
+        <a class="nav-sub-item" href="payments.html">Payment History</a>
+      </div>
+
+      <div class="side-label">ADMISSIONS & FINANCE</div>
+      <a class="nav-link active" href="tracking.html">
+        <span class="icon">📋</span>
+        <span>Application Tracking</span>
+      </a>
+      <a class="nav-link" href="payments.html">
+        <span class="icon">💳</span>
+        <span>Fee Payment</span>
+      </a>
+      <a class="nav-link" href="documents.html">
+        <span class="icon">↥</span>
+        <span>Upload Documents</span>
+      </a>
+      <a class="nav-link" href="profile.html">
+        <span class="icon">◉</span>
+        <span>My Profile</span>
+      </a>
+
+      <div class="side-label">ACCOUNT & SETTINGS</div>
+      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
+        <span class="icon">↪</span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <b>Admissions Helpdesk</b>
+        <p>Questions regarding evaluation or documents? Contact our office.</p>
+        <a href="mailto:admissions@unibridge.edu">admissions@unibridge.edu ↗</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── Main Shell ─────────────────────────────────────────── -->
+  <div class="main-shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open sidebar">☰</button>
+        <div class="quick-pills">
+          <div class="quick-pill" title="Admissions Support">💬</div>
+          <div class="quick-pill" title="Application Checklist">☑</div>
+        </div>
+        <div class="crumb">Student Portal <span>/</span> <b>Application Tracking</b></div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="search-box">
+          <input type="text" placeholder="Search application..." aria-label="Search">
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="top-action-btn" title="Notifications" id="notif-btn">
+          <span>🔔</span>
+          <span class="badge-dot" id="notif-badge"></span>
+        </div>
+        <div class="top-user" onclick="window.location.href='profile.html'">
+          <span class="avatar" id="topbar-avatar">S</span>
+          <div class="user-meta">
+            <strong id="topbar-name">—</strong>
+            <small id="topbar-role">Student</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- Section Header -->
+      <div class="section-head">
+        <div>
+          <h2>Application Lifecycle & Status Tracking</h2>
+          <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Real-time status updates from the admissions committee, stage progression, and notifications.</p>
+        </div>
+        <div class="section-actions" id="app-badge-slot">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div id="global-toast"></div>
+
+      <!-- 4 Quick Status Metrics -->
+      <div class="status-stats-row">
+        <div class="status-stat-card">
+          <div class="status-stat-icon" style="background:var(--primary-soft);color:var(--primary)">📋</div>
+          <div class="status-stat-body">
+            <small>Application ID</small>
+            <strong id="stat-app-num">UB-2024</strong>
+          </div>
+        </div>
+        <div class="status-stat-card">
+          <div class="status-stat-icon" style="background:#eef4ff;color:#2762eb">🎯</div>
+          <div class="status-stat-body">
+            <small>Current Lifecycle State</small>
+            <strong id="stat-current-stage">Under Review</strong>
+          </div>
+        </div>
+        <div class="status-stat-card">
+          <div class="status-stat-icon" style="background:var(--teal-soft);color:var(--teal)">🗓️</div>
+          <div class="status-stat-body">
+            <small>Submission Date</small>
+            <strong id="stat-submit-date">Recent</strong>
+          </div>
+        </div>
+        <div class="status-stat-card">
+          <div class="status-stat-icon" style="background:var(--orange-soft);color:var(--orange)">📁</div>
+          <div class="status-stat-body">
+            <small>Document Compliance</small>
+            <strong id="stat-doc-status">In Progress</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner Hero with Stage Details and Dynamic CTA -->
+      <section class="banner-hero" id="status-hero">
+        <div class="banner-left">
+          <div class="banner-art-wrap" style="width:100px;height:84px;display:grid;place-items:center;background:#ffffff;font-size:36px;border-radius:12px;box-shadow:0 2px 8px rgba(39,98,235,0.08);flex-shrink:0">
+            <span id="status-icon">📑</span>
+          </div>
+          <div class="banner-copy">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--primary);margin-bottom:4px" id="app-ref-id">APPLICATION ID: #—</div>
+            <h1 id="status-headline" style="font-size:20px">Evaluating Application</h1>
+            <p id="status-note-text" style="font-size:13px;line-height:1.5">Loading official notes from admissions office…</p>
+          </div>
+        </div>
+        <div class="banner-right" id="status-action-cta">
+          <!-- Dynamic CTA Button based on status -->
+        </div>
+      </section>
+
+      <!-- Main Layout: 2 Columns (Timeline & Details Left, Simulator & Notifs Right) -->
+      <div class="details-grid">
+        <!-- ─── Left Column: Timeline & Verification Checklist ─── -->
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <!-- Timeline Card -->
+          <div class="timeline-card">
+            <div class="card-head">
+              <div>
+                <h3>Application Milestones Timeline</h3>
+                <small style="color:var(--text-muted);font-size:12px">Track progression from initial submission to final registrar decision</small>
+              </div>
+              <span class="pill active" style="font-size:10px">Live Status</span>
+            </div>
+
+            <div class="timeline" id="timeline-container">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Document Verification Checklist Card -->
+          <div class="card">
+            <div class="card-head">
+              <h3>Required Document Checklist</h3>
+              <a href="documents.html" class="btn btn-outline btn-sm">Manage Files →</a>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px" id="doc-checklist-container">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border-radius:8px;border:1px solid #edf2f7">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="font-size:16px">🪪</span>
+                  <div>
+                    <strong style="font-size:13px;display:block">National ID / Passport</strong>
+                    <small style="color:var(--text-muted);font-size:11px">Identity verification document</small>
+                  </div>
+                </div>
+                <span class="pill finished" style="font-size:11px">Verified</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border-radius:8px;border:1px solid #edf2f7">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="font-size:16px">📜</span>
+                  <div>
+                    <strong style="font-size:13px;display:block">Senior Secondary / High School Marksheet</strong>
+                    <small style="color:var(--text-muted);font-size:11px">Academic eligibility check</small>
+                  </div>
+                </div>
+                <span class="pill in-progress" id="chk-marksheet-pill" style="font-size:11px">In Review</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;border-radius:8px;border:1px solid #edf2f7">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="font-size:16px">🎓</span>
+                  <div>
+                    <strong style="font-size:13px;display:block">Transfer / Migration Certificate</strong>
+                    <small style="color:var(--text-muted);font-size:11px">Institution transfer documentation</small>
+                  </div>
+                </div>
+                <span class="pill paused" id="chk-cert-pill" style="font-size:11px">Optional</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── Right Column: Reviewer Simulator & Notifications Feed ─── -->
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <!-- Status Change Simulator (For Teacher / Evaluator Demo) -->
+          <div class="card" style="background:#fcfdff;border:1px dashed #b9cbe7">
+            <div class="card-head">
+              <h3>Admissions Review Simulator</h3>
+              <span class="pill active" style="font-size:10px;background:#2762eb">Examiner Demo</span>
+            </div>
+            <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.45">
+              Simulate admission committee lifecycle actions to test milestone timeline, notifications, and dynamic banners:
+            </p>
+            <div class="field" style="margin-bottom:10px">
+              <label>Select Stage to Transition To</label>
+              <select id="sim-status-select">
+                <option value="Draft">Draft (Registration in Progress)</option>
+                <option value="Submitted">Submitted (Awaiting Faculty Review)</option>
+                <option value="Under Review" selected>Under Review (Admissions Panel)</option>
+                <option value="Documents Pending">Documents Pending (Missing Uploads)</option>
+                <option value="Correction Required">Correction Required (Resubmit Marksheet)</option>
+                <option value="Waitlisted">Waitlisted (Quota Allocation)</option>
+                <option value="Approved">Approved (Admissions Offer Issued)</option>
+                <option value="Rejected">Rejected (Not Selected)</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom:14px">
+              <label>Official Committee Note (Optional)</label>
+              <input id="sim-note-input" placeholder="e.g. Identity verified; marksheet accepted for Bachelor program.">
+            </div>
+            <button class="btn btn-primary" id="sim-submit-btn" style="width:100%;justify-content:center">
+              Apply Status Transition ⚡
+            </button>
+          </div>
+
+          <!-- Notifications & Alerts Feed -->
+          <div class="card">
+            <div class="card-head">
+              <h3>Status Alerts & Notifications</h3>
+              <button id="mark-all-read" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:12px;font-weight:600">Mark all read</button>
+            </div>
+            <div class="activity-list" id="notif-feed">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Counselor Support Card -->
+          <div class="card" style="background:#f8fafc">
+            <div class="card-head">
+              <h3>Admissions Guidance</h3>
+              <span style="font-size:18px">💬</span>
+            </div>
+            <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;margin-bottom:12px">
+              Need assistance with document re-upload or fee payment instructions? Our counselors are available Monday – Friday (9 AM – 5 PM).
+            </p>
+            <div style="font-size:12px;color:var(--text-main);display:flex;flex-direction:column;gap:4px">
+              <span>📞 <strong>+1 (800) 555-UNIBRIDGE</strong></span>
+              <span>✉️ <strong>helpdesk@unibridge.edu</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script type="module">
+  import { api } from '../js/api.js';
+  import { requireAuth, hideLoader, initSidebarToggle, showToast, fmtDate, pillHTML } from '../js/utils.js';
+
+  initSidebarToggle();
+
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const sidebar = document.getElementById('sidebar');
+  if (backdrop && sidebar) {
+    backdrop.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('active');
+    });
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+      backdrop.classList.toggle('active', sidebar.classList.contains('open'));
+    });
+  }
+
+  async function init() {
+    const session = await requireAuth(api);
+    if (!session) return;
+    const fullName = session.user?.full_name || session.user?.admission_no || 'Student';
+    document.getElementById('topbar-name').textContent = fullName;
+    document.getElementById('topbar-avatar').textContent = (fullName[0] || 'S').toUpperCase();
+    document.getElementById('topbar-role').textContent = session.user?.admission_no || 'Student';
+
+    await loadApplication();
+    await loadNotifications();
+    hideLoader();
+  }
+
+  async function loadApplication() {
+    const res = await api.application();
+    if (!res.success) { showToast(res.message, 'error'); return; }
+
+    const { application: app, timeline, user: u } = res.data;
+    const st = app.status;
+
+    // Header badge
+    const badgeMap = {
+      'Approved': 'finished',
+      'Waitlisted': 'pending',
+      'Rejected': 'rejected',
+      'Correction Required': 'rejected',
+      'Documents Pending': 'pending',
+      'Under Review': 'active',
+      'Submitted': 'active',
+      'Draft': 'paused'
+    };
+    document.getElementById('app-badge-slot').innerHTML = `
+      <span class="pill ${badgeMap[st] || 'active'}" style="font-size:12px;padding:6px 14px">${st}</span>
+    `;
+
+    // 4 Stat Cards
+    document.getElementById('stat-app-num').textContent = u.admission_no || 'UB-2024';
+    document.getElementById('stat-current-stage').textContent = st;
+    document.getElementById('stat-submit-date').textContent = app.submitted_at ? fmtDate(app.submitted_at) : 'Drafting';
+    
+    const docStatusEl = document.getElementById('stat-doc-status');
+    const chkMarksheet = document.getElementById('chk-marksheet-pill');
+    if (st === 'Approved' || st === 'Waitlisted') {
+      docStatusEl.textContent = 'All Verified ✓';
+      docStatusEl.style.color = '#00a884';
+      if (chkMarksheet) { chkMarksheet.className = 'pill finished'; chkMarksheet.textContent = 'Verified'; }
+    } else if (st === 'Correction Required') {
+      docStatusEl.textContent = 'Action Needed ⚠️';
+      docStatusEl.style.color = '#ea5455';
+      if (chkMarksheet) { chkMarksheet.className = 'pill rejected'; chkMarksheet.textContent = 'Correction Needed'; }
+    } else if (st === 'Documents Pending') {
+      docStatusEl.textContent = 'Upload Pending ⚠️';
+      docStatusEl.style.color = '#f58220';
+      if (chkMarksheet) { chkMarksheet.className = 'pill pending'; chkMarksheet.textContent = 'Pending'; }
+    } else if (st === 'Draft') {
+      docStatusEl.textContent = 'Incomplete';
+      docStatusEl.style.color = 'var(--text-main)';
+      if (chkMarksheet) { chkMarksheet.className = 'pill paused'; chkMarksheet.textContent = 'Not Uploaded'; }
+    } else {
+      docStatusEl.textContent = 'Under Review';
+      docStatusEl.style.color = '#2762eb';
+      if (chkMarksheet) { chkMarksheet.className = 'pill in-progress'; chkMarksheet.textContent = 'In Review'; }
+    }
+
+    document.getElementById('app-ref-id').textContent = `APPLICATION ID: #${u.admission_no || 'UB-2024'}`;
+    document.getElementById('status-headline').textContent = `Current Status: ${st}`;
+    document.getElementById('status-note-text').textContent = app.status_note || 'Application undergoing official procedural checks.';
+
+    // Icon map
+    const iconMap = {
+      'Approved': '🎉',
+      'Waitlisted': '⏳',
+      'Rejected': '❌',
+      'Correction Required': '⚠️',
+      'Documents Pending': '📄',
+      'Under Review': '🔍',
+      'Submitted': '📨',
+      'Draft': '✏️'
+    };
+    document.getElementById('status-icon').textContent = iconMap[st] || '📑';
+
+    // Action CTA inside Banner
+    const ctaSlot = document.getElementById('status-action-cta');
+    if (st === 'Approved') {
+      ctaSlot.innerHTML = `
+        <div class="banner-right-card" style="border-color:#00a884;background:#f0faf6">
+          <p style="color:#00a884;font-weight:700">🎉 Congratulations! Offer Letter Issued</p>
+          <a class="btn btn-primary" href="payments.html" style="background:#00a884;box-shadow:0 3px 10px rgba(0,168,132,0.3)">Proceed to Fee Payment →</a>
+        </div>`;
+    } else if (st === 'Correction Required' || st === 'Documents Pending') {
+      ctaSlot.innerHTML = `
+        <div class="banner-right-card" style="border-color:#f58220;background:#fffaf3">
+          <p style="color:#f58220;font-weight:700">Action Required on Documents</p>
+          <a class="btn btn-primary" href="documents.html" style="background:#f58220;box-shadow:0 3px 10px rgba(245,130,32,0.3)">Re-upload Documents →</a>
+        </div>`;
+    } else if (st === 'Draft') {
+      ctaSlot.innerHTML = `
+        <div class="banner-right-card">
+          <p>Application Incomplete</p>
+          <a class="btn btn-primary" href="registration.html">Complete Application →</a>
+        </div>`;
+    } else {
+      ctaSlot.innerHTML = `
+        <div class="banner-right-card">
+          <p>Admissions Processing Active</p>
+          <a class="btn btn-primary" href="payments.html">View Fee Receipts →</a>
+        </div>`;
+    }
+
+    // Render Timeline
+    const tContainer = document.getElementById('timeline-container');
+    tContainer.innerHTML = timeline.map(item => {
+      const isDone = item.state === 'completed';
+      const isCur  = item.state === 'current';
+      return `
+        <div class="timeline-item">
+          <div class="timeline-badge ${isDone ? 'completed' : (isCur ? 'current' : '')}">
+            ${isDone ? '✓' : ''}
+          </div>
+          <div class="timeline-body" style="${isCur ? 'border-color:var(--primary);background:#f4f8ff;box-shadow:0 2px 8px rgba(39,98,235,0.06)' : ''}">
+            <div class="timeline-body-head">
+              <h4 style="${isCur ? 'color:var(--primary)' : ''}">${item.label}</h4>
+              <span>${item.timestamp ? fmtDate(item.timestamp) : (isCur ? 'Active Now' : 'Pending')}</span>
+            </div>
+            <p>${item.desc}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Pre-select simulator value
+    document.getElementById('sim-status-select').value = st;
+  }
+
+  async function loadNotifications() {
+    const res = await api.notifications();
+    if (!res.success) return;
+
+    const notifs = res.data.notifications || [];
+    const unread = res.data.unread_count || 0;
+    const badge = document.getElementById('notif-badge');
+    if (badge) badge.style.display = unread > 0 ? 'block' : 'none';
+
+    const feed = document.getElementById('notif-feed');
+    if (!notifs.length) {
+      feed.innerHTML = `<p style="text-align:center;color:var(--text-muted);font-size:12px;padding:16px 0">No notifications yet.</p>`;
+      return;
+    }
+
+    const typeIcons = { success: '✅', warning: '⚠️', alert: '🚨', info: '🔔' };
+
+    feed.innerHTML = notifs.slice(0, 6).map(n => `
+      <div class="activity-item" style="${n.is_read == 0 ? 'background:#f8fbff;padding:8px 10px;border-radius:8px' : ''}">
+        <div class="activity-icon-bubble" style="font-size:12px">
+          ${typeIcons[n.type] || '🔔'}
+        </div>
+        <div class="activity-meta" style="flex:1">
+          <b>${n.title}</b>
+          <small>${n.message}</small>
+          <small style="color:var(--text-muted);margin-top:2px">${fmtDate(n.created_at)}</small>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Simulator transition submit
+  document.getElementById('sim-submit-btn').addEventListener('click', async () => {
+    const status = document.getElementById('sim-status-select').value;
+    const note   = document.getElementById('sim-note-input').value.trim();
+
+    const btn = document.getElementById('sim-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Updating…';
+
+    const res = await api.updateAppStatus({ status, note });
+    btn.disabled = false;
+    btn.textContent = 'Apply Status Transition ⚡';
+
+    if (res.success) {
+      showToast(res.message, 'success');
+      document.getElementById('sim-note-input').value = '';
+      await loadApplication();
+      await loadNotifications();
+    } else {
+      showToast(res.message, 'error');
+    }
+  });
+
+  document.getElementById('mark-all-read').addEventListener('click', async () => {
+    await api.markNotificationRead({});
+    await loadNotifications();
+    showToast('Notifications marked as read.', 'info');
+  });
+
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    await api.logout();
+    window.location.href = 'login.html';
+  });
+
+  init();
+</script>
+</body>
+</html>

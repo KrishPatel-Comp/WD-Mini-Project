@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fee Payment &amp; Checkout History · UniBridge Student Portal</title>
+  <meta name="description" content="Pay university application &amp; admission fees, track payment history, and download official receipts.">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+<div class="app-shell">
+  <!-- ─── Sidebar ────────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand-wrap">
+      <button class="brand-toggle-btn" id="sidebar-collapse-btn" aria-label="Toggle Navigation">☰</button>
+      <a class="brand" href="dashboard.html">
+        <span class="brand-mark">U</span>
+        <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-container">
+      <div class="side-label">DASHBOARD &amp; APPS</div>
+      <a class="nav-link" href="dashboard.html">
+        <span class="icon">⌂</span><span>Dashboard</span>
+      </a>
+      <div class="nav-sub">
+        <a class="nav-sub-item" href="dashboard.html">Overview</a>
+        <a class="nav-sub-item" href="tracking.html">Application Tracking</a>
+        <a class="nav-sub-item active" href="payments.html">Payment History</a>
+      </div>
+
+      <div class="side-label">ADMISSIONS &amp; FINANCE</div>
+      <a class="nav-link" href="tracking.html">
+        <span class="icon">📋</span><span>Application Tracking</span>
+      </a>
+      <a class="nav-link active" href="payments.html">
+        <span class="icon">💳</span><span>Fee Payment</span>
+      </a>
+      <a class="nav-link" href="registration.html">
+        <span class="icon">▤</span><span>Registration</span>
+      </a>
+      <a class="nav-link" href="documents.html">
+        <span class="icon">↥</span><span>Upload Documents</span>
+      </a>
+      <a class="nav-link" href="profile.html">
+        <span class="icon">◉</span><span>My Profile</span>
+      </a>
+
+      <div class="side-label">ACCOUNT &amp; SETTINGS</div>
+      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
+        <span class="icon">↪</span><span>Sign Out</span>
+      </button>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <b>Finance Helpdesk</b>
+        <p>Payment queries or gateway verification? Reach our finance desk.</p>
+        <a href="mailto:finance@unibridge.edu">Contact Finance ↗</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── Main Shell ─────────────────────────────────────────── -->
+  <div class="main-shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open sidebar">☰</button>
+        <div class="quick-pills">
+          <div class="quick-pill" title="Chat &amp; Support">💬</div>
+          <div class="quick-pill" title="Receipt History">🧾</div>
+          <div class="quick-pill" title="Tasks &amp; Checklist">☑</div>
+        </div>
+        <div class="crumb">Finance <span>/</span> <b>Fee Payment</b></div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="search-box">
+          <input type="text" id="search-ref" placeholder="Search reference..." aria-label="Search reference">
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="top-action-btn" title="Notifications">
+          <span>🔔</span>
+          <span class="badge-dot" id="notif-badge"></span>
+        </div>
+        <div class="top-user" onclick="window.location.href='profile.html'">
+          <span class="avatar" id="topbar-avatar">S</span>
+          <div class="user-meta">
+            <strong id="topbar-name">—</strong>
+            <small id="topbar-role">Student</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- Page Header -->
+      <div class="section-head">
+        <div>
+          <h2 style="font-family:var(--font-head);font-size:20px;font-weight:800;color:var(--text-main)">Fee Payment Centre</h2>
+          <p style="color:var(--text-muted);font-size:13px;margin-top:3px">Manage your application &amp; admission fee payments. All transactions are secured.</p>
+        </div>
+        <div class="section-actions">
+          <a href="tracking.html">View Application Status →</a>
+        </div>
+      </div>
+
+      <!-- Fee Payment Cards -->
+      <div class="fee-cards-grid" id="fee-cards-area">
+        <!-- Card 1: Application Fee -->
+        <div class="fee-card" style="border-left:4px solid var(--primary)">
+          <div class="fee-card-info">
+            <span class="fee-card-stage" style="background:var(--primary-soft);color:var(--primary)">● Stage 1: Application</span>
+            <h3>Application Processing Fee</h3>
+            <p>Mandatory for admission committee review. One-time payment.</p>
+            <div class="fee-card-amount" id="app-fee-amount">NGN 300.00</div>
+          </div>
+          <div class="fee-card-action">
+            <button class="btn btn-primary" id="pay-app-fee-btn" onclick="openCheckout('Application Fee', 300.00)">
+              Pay Fee →
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 2: Admission Fee -->
+        <div class="fee-card" style="border-left:4px solid var(--teal)">
+          <div class="fee-card-info">
+            <span class="fee-card-stage" style="background:var(--teal-soft);color:var(--teal)">● Stage 2: Acceptance</span>
+            <h3>Admission &amp; Enrolment Fee</h3>
+            <p>Payable upon acceptance letter to confirm your seat allocation.</p>
+            <div class="fee-card-amount" id="adm-fee-amount">NGN 700.00</div>
+          </div>
+          <div class="fee-card-action">
+            <button class="btn btn-primary" style="background:var(--teal)" id="pay-adm-fee-btn" onclick="openCheckout('Admission Fee', 700.00)">
+              Pay Admission →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment History -->
+      <section class="payment-history-card">
+        <div class="payment-history-header">
+          <div class="payment-history-header-left">
+            <h2>StroWallet Checkout History</h2>
+            <p>All verified fee transactions for your student account</p>
+          </div>
+          <div class="payment-summary-pills" id="payment-summary-pills">
+            <div class="payment-summary-pill">
+              <small>Total Paid</small>
+              <strong id="total-paid-display">NGN 0.00</strong>
+            </div>
+            <div class="payment-summary-pill">
+              <small>Pending</small>
+              <strong id="total-pending-display">NGN 0.00</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="payment-table">
+            <thead>
+              <tr>
+                <th style="width:40px">#</th>
+                <th>FEE TYPE</th>
+                <th>REFERENCE</th>
+                <th>AMOUNT</th>
+                <th>STATUS</th>
+                <th>PAID AT</th>
+                <th style="text-align:right">ACTION</th>
+              </tr>
+            </thead>
+            <tbody id="payment-table-body">
+              <tr><td colspan="7" style="text-align:center;padding:36px;color:var(--text-muted)">Loading payment records…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ─── Simulated Payment Modal ───────────────────────────────── -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal-box">
+    <div class="modal-box-head">
+      <div>
+        <h3 style="font-size:17px;font-weight:800;color:var(--text-main)" id="modal-fee-title">Fee Checkout</h3>
+        <small style="color:var(--text-muted)">Simulated Secure StroWallet Gateway</small>
+      </div>
+      <button class="modal-close" onclick="closeCheckout()">✕</button>
+    </div>
+
+    <!-- Amount Banner -->
+    <div style="background:linear-gradient(105deg,var(--primary-soft),#f0f8ff);border:1px solid #d4e3fc;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <small style="color:var(--text-muted);font-size:11.5px;display:block;margin-bottom:2px">Total Amount Due</small>
+        <div style="font-size:26px;font-weight:800;color:var(--text-main);font-family:var(--font-head)" id="modal-amount-display">NGN 300.00</div>
+      </div>
+      <div style="text-align:right">
+        <span class="pill active" style="font-size:10.5px">Sandbox Demo</span>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">No real charge</div>
+      </div>
+    </div>
+
+    <form id="checkout-form" onsubmit="handlePaymentSubmit(event)">
+      <div class="form-grid" style="margin-bottom:16px">
+        <div class="field">
+          <label>Payment Method</label>
+          <select id="checkout-method">
+            <option value="StroWallet Checkout">StroWallet Balance (Instant)</option>
+            <option value="Debit/Credit Card">Debit/Credit Card (Visa/Mastercard)</option>
+            <option value="Bank Transfer">Direct Bank Transfer</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Account Holder</label>
+          <input id="checkout-holder" value="Student Enrolment Account" required>
+        </div>
+        <div class="field">
+          <label>Card Number (Demo)</label>
+          <input value="•••• •••• •••• 4242" disabled>
+        </div>
+        <div class="field">
+          <label>CVV / Expiry</label>
+          <input value="123 | 08/28" disabled>
+        </div>
+      </div>
+
+      <input type="hidden" id="modal-ref-target" value="">
+
+      <button type="submit" class="btn btn-primary" id="confirm-pay-btn" style="width:100%;padding:13px;font-size:14px">
+        ✓ Complete Simulated Payment
+      </button>
+      <p style="text-align:center;font-size:11.5px;color:var(--text-muted);margin-top:10px">🔒 Sandboxed demo — no real transaction is processed</p>
+    </form>
+  </div>
+</div>
+
+<!-- ─── Printable Official Receipt Modal ──────────────────────── -->
+<div class="modal-overlay" id="receipt-modal">
+  <div class="modal-box receipt-printable" style="max-width:620px">
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <span class="pill-paid">Official Electronic Receipt</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="window.print()">Print / Save PDF 🖨</button>
+        <button class="modal-close" onclick="closeReceipt()">✕</button>
+      </div>
+    </div>
+
+    <div style="border:2px solid #e2e8f0;border-radius:14px;padding:28px;background:#fff">
+      <!-- Receipt Header -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #18223c;padding-bottom:16px;margin-bottom:20px">
+        <div>
+          <div style="font-family:var(--font-head);font-size:22px;font-weight:800;color:#18223c">UniBridge University</div>
+          <div style="font-size:12px;color:var(--text-muted)">Office of Finance &amp; Bursar · Student Portal</div>
+        </div>
+        <div style="text-align:right">
+          <span class="pill-paid">PAID IN FULL</span>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px" id="receipt-date">—</div>
+        </div>
+      </div>
+
+      <!-- Meta Grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12.5px;margin-bottom:20px;background:#f8fafc;padding:14px;border-radius:10px">
+        <div><span style="color:var(--text-muted);display:block">Student Name:</span><b id="receipt-student">—</b></div>
+        <div><span style="color:var(--text-muted);display:block">Admission / Reg No:</span><b id="receipt-admn">—</b></div>
+        <div><span style="color:var(--text-muted);display:block">Program / Course:</span><b id="receipt-course">—</b></div>
+        <div><span style="color:var(--text-muted);display:block">Transaction Reference:</span><code id="receipt-ref" style="font-size:11px">—</code></div>
+      </div>
+
+      <!-- Items -->
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px">
+        <thead><tr style="border-bottom:1px solid #cbd5e1">
+          <th style="text-align:left;padding:8px 0">Description</th>
+          <th style="text-align:right;padding:8px 0">Amount</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td style="padding:12px 0" id="receipt-item-title">School Fee Payment</td>
+            <td style="text-align:right;padding:12px 0;font-weight:700" id="receipt-item-amount">—</td>
+          </tr>
+          <tr style="border-top:2px solid #e2e8f0;font-size:15px;font-weight:800">
+            <td style="padding:12px 0">Total Settled:</td>
+            <td style="text-align:right;padding:12px 0;color:#00a884" id="receipt-total-amount">—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Seal -->
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #cbd5e1;padding-top:14px;font-size:11px;color:var(--text-muted)">
+        <div>Authenticated by UniBridge Bursar<br>Gateway: StroWallet Sandbox</div>
+        <div style="text-align:right;color:#00a884;font-weight:700">✓ VERIFIED &amp; RECORDED</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { api } from '../js/api.js';
+  import { requireAuth, hideLoader, initSidebarToggle, showToast, fmtDate } from '../js/utils.js';
+
+  initSidebarToggle();
+
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const sidebar  = document.getElementById('sidebar');
+  if (backdrop && sidebar) {
+    backdrop.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('active');
+    });
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+      backdrop.classList.toggle('active', sidebar.classList.contains('open'));
+    });
+  }
+
+  let activeFeeType = 'Application Fee';
+  let activeAmount  = 300.00;
+  let allPayments   = [];
+
+  async function init() {
+    const session = await requireAuth(api);
+    if (!session) return;
+    const fullName = session.user?.full_name || session.user?.admission_no || 'Student';
+    document.getElementById('topbar-name').textContent   = fullName;
+    document.getElementById('topbar-avatar').textContent = (fullName[0] || 'S').toUpperCase();
+    document.getElementById('topbar-role').textContent   = session.user?.admission_no || 'Student';
+    await loadPayments();
+    hideLoader();
+  }
+
+  async function loadPayments() {
+    const res = await api.payments();
+    if (!res.success) { showToast(res.message, 'error'); return; }
+
+    allPayments = res.data.payments;
+    const cur = res.data.currency_sym || 'NGN ';
+    const totalPaid    = res.data.total_paid    || 0;
+    const totalPending = res.data.total_pending || 0;
+
+    document.getElementById('total-paid-display').textContent    = `${cur}${totalPaid.toFixed(2)}`;
+    document.getElementById('total-pending-display').textContent = `${cur}${totalPending.toFixed(2)}`;
+
+    renderTable(allPayments, cur);
+  }
+
+  function renderTable(payments, cur = 'NGN ') {
+    const tbody = document.getElementById('payment-table-body');
+    if (!payments.length) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:36px;color:var(--text-muted)">No payment records found.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = payments.map((p, idx) => {
+      const isPaid      = p.status === 'Paid';
+      const paidDate    = isPaid && p.paid_at ? fmtDate(p.paid_at) : '—';
+      const amount      = `${cur}${parseFloat(p.amount).toFixed(2)}`;
+      return `
+        <tr>
+          <td style="color:var(--text-muted);font-weight:600">${idx+1}</td>
+          <td style="font-weight:600;color:var(--text-main)">${p.fee_type}</td>
+          <td class="col-ref"><code>${p.reference}</code></td>
+          <td class="col-amount">${amount}</td>
+          <td><span class="${isPaid ? 'pill-paid' : 'pill-pending'}">${p.status}</span></td>
+          <td style="color:${isPaid ? 'var(--text-main)' : 'var(--text-muted)'}">${paidDate}</td>
+          <td style="text-align:right">
+            ${isPaid
+              ? `<button class="btn btn-light btn-sm" onclick="viewReceipt('${p.reference}')">Receipt 📄</button>`
+              : `<button class="btn-requery" onclick="openCheckoutForRef('${p.reference}','${p.fee_type}',${p.amount})">Pay Now</button>`
+            }
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Search filter
+  document.getElementById('search-ref').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    const filtered = allPayments.filter(p =>
+      p.reference.toLowerCase().includes(q) ||
+      p.fee_type.toLowerCase().includes(q) ||
+      p.status.toLowerCase().includes(q)
+    );
+    renderTable(filtered);
+  });
+
+  window.openCheckout = function(feeType, amount) {
+    activeFeeType = feeType;
+    activeAmount  = amount;
+    document.getElementById('modal-fee-title').textContent    = `${feeType} Checkout`;
+    document.getElementById('modal-amount-display').textContent = `NGN ${amount.toFixed(2)}`;
+    document.getElementById('modal-ref-target').value = '';
+    document.getElementById('checkout-modal').classList.add('open');
+  };
+
+  window.openCheckoutForRef = function(ref, feeType, amount) {
+    activeFeeType = feeType;
+    activeAmount  = parseFloat(amount);
+    document.getElementById('modal-fee-title').textContent    = `Settle: ${ref.slice(0,12)}…`;
+    document.getElementById('modal-amount-display').textContent = `NGN ${parseFloat(amount).toFixed(2)}`;
+    document.getElementById('modal-ref-target').value = ref;
+    document.getElementById('checkout-modal').classList.add('open');
+  };
+
+  window.closeCheckout = function() {
+    document.getElementById('checkout-modal').classList.remove('open');
+  };
+
+  window.handlePaymentSubmit = async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('confirm-pay-btn');
+    btn.disabled    = true;
+    btn.textContent = '⏳ Processing…';
+
+    const ref    = document.getElementById('modal-ref-target').value;
+    const method = document.getElementById('checkout-method').value;
+
+    const res = await api.payFee({ fee_type: activeFeeType, amount: activeAmount, method, reference: ref });
+
+    btn.disabled    = false;
+    btn.textContent = '✓ Complete Simulated Payment';
+
+    if (res.success) {
+      closeCheckout();
+      showToast('Payment successful! Receipt generated.', 'success');
+      await loadPayments();
+      viewReceipt(res.data.reference);
+    } else {
+      showToast(res.message, 'error');
+    }
+  };
+
+  window.viewReceipt = async function(ref) {
+    const res = await api.receipt(ref);
+    if (!res.success) { showToast(res.message, 'error'); return; }
+    const r = res.data.receipt;
+    document.getElementById('receipt-student').textContent   = r.student_name;
+    document.getElementById('receipt-admn').textContent     = r.admission_no;
+    document.getElementById('receipt-course').textContent   = r.course;
+    document.getElementById('receipt-ref').textContent      = r.reference;
+    document.getElementById('receipt-date').textContent     = fmtDate(r.paid_at);
+    document.getElementById('receipt-item-title').textContent  = `${r.fee_type} (Method: ${r.payment_method})`;
+    document.getElementById('receipt-item-amount').textContent = `${r.currency} ${r.amount.toFixed(2)}`;
+    document.getElementById('receipt-total-amount').textContent = `${r.currency} ${r.amount.toFixed(2)}`;
+    document.getElementById('receipt-modal').classList.add('open');
+  };
+
+  window.closeReceipt = function() {
+    document.getElementById('receipt-modal').classList.remove('open');
+  };
+
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    await api.logout();
+    window.location.href = 'login.html';
+  });
+
+  init();
+</script>
+</body>
+</html>

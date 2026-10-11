@@ -10,104 +10,207 @@
 <body>
 
 <div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
 <div class="app-shell">
-  <!-- Sidebar -->
+  <!-- ─── EduAdmin Sidebar ────────────────────────────────────── -->
   <aside class="sidebar" id="sidebar">
-    <a class="brand" href="dashboard.html">
-      <span class="brand-mark">u</span>
-      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
-    </a>
-    <div class="side-label">WORKSPACE</div>
-    <nav>
-      <a class="nav-link" href="dashboard.html"><span class="icon">⌂</span> Overview</a>
-      <a class="nav-link active" href="registration.html"><span class="icon">▤</span> Registration</a>
-      <a class="nav-link" href="documents.html"><span class="icon">↥</span> Documents</a>
-      <a class="nav-link" href="profile.html"><span class="icon">◉</span> My profile</a>
-    </nav>
+    <div class="sidebar-brand-wrap">
+      <button class="brand-toggle-btn" id="sidebar-collapse-btn" aria-label="Toggle Navigation">☰</button>
+      <a class="brand" href="dashboard.html">
+        <span class="brand-mark">U</span>
+        <span class="brand-name">EduAdmin<small>STUDENT PORTAL</small></span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-container">
+      <div class="side-label">DASHBOARD & APPS</div>
+      <a class="nav-link" href="dashboard.html">
+        <span class="icon">⌂</span>
+        <span>Dashboard</span>
+      </a>
+      <div class="nav-sub">
+        <a class="nav-sub-item" href="dashboard.html">Overview</a>
+        <a class="nav-sub-item" href="tracking.html">Application Tracking</a>
+        <a class="nav-sub-item" href="payments.html">Payment History</a>
+      </div>
+
+      <div class="side-label">ADMISSIONS & FINANCE</div>
+      <a class="nav-link" href="tracking.html">
+        <span class="icon">📋</span>
+        <span>Application Tracking</span>
+      </a>
+      <a class="nav-link" href="payments.html">
+        <span class="icon">💳</span>
+        <span>Fee Payment</span>
+      </a>
+      <a class="nav-link active" href="registration.html">
+        <span class="icon">▤</span>
+        <span>Registration</span>
+      </a>
+      <a class="nav-link" href="documents.html">
+        <span class="icon">↥</span>
+        <span>Upload Documents</span>
+      </a>
+      <a class="nav-link" href="profile.html">
+        <span class="icon">◉</span>
+        <span>My Profile</span>
+      </a>
+
+      <div class="side-label">ACCOUNT & SETTINGS</div>
+      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
+        <span class="icon">↪</span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+
     <div class="sidebar-bottom">
       <div class="help-card">
-        <span class="help-icon">✦</span><b>Need a hand?</b>
-        <p>Your onboarding guide is here to help.</p>
-        <a href="mailto:admissions@unibridge.edu">Contact support ↗</a>
+        <b>Need Assistance?</b>
+        <p>Our student helpdesk is available 24/7 to help you onboard.</p>
+        <a href="mailto:admissions@unibridge.edu">Contact Support ↗</a>
       </div>
-      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
-        <span class="icon">↪</span> Sign out
-      </button>
     </div>
   </aside>
 
+  <!-- ─── Main Content Shell ──────────────────────────────────── -->
   <div class="main-shell">
     <header class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
-        <div class="crumb">Student portal <span>/</span> Registration</div>
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open sidebar">☰</button>
+        <div class="quick-pills">
+          <div class="quick-pill" title="Chat & Support">💬</div>
+          <div class="quick-pill" title="Layout Options">▦</div>
+          <div class="quick-pill" title="Tasks & Checklist">☑</div>
+        </div>
+        <div class="crumb">Student Portal <span>/</span> <b>Registration</b></div>
       </div>
-      <div class="top-user">
-        <span class="online-dot"></span>
-        <span id="topbar-name">—</span>
-        <span class="avatar" id="topbar-avatar">S</span>
+
+      <div class="topbar-right">
+        <div class="search-box">
+          <input type="text" placeholder="Search..." aria-label="Search">
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="top-action-btn" title="Notifications">
+          <span>🔔</span>
+          <span class="badge-dot"></span>
+        </div>
+        <div class="top-user" onclick="window.location.href='profile.html'">
+          <span class="avatar" id="topbar-avatar">S</span>
+          <div class="user-meta">
+            <strong id="topbar-name">—</strong>
+            <small id="topbar-role">Student</small>
+          </div>
+        </div>
       </div>
     </header>
 
     <main class="content">
-      <div class="eyebrow">STUDENT REGISTRATION</div>
-      <h1 class="page-title">Your details, your pace.</h1>
-      <p class="subhead">A few details help us prepare your student record. Your progress saves as you go.</p>
+      <div class="section-head">
+        <div>
+          <h2>Student Registration Journey</h2>
+          <p style="color:var(--text-muted);font-size:13px;margin-top:2px">Fill in your official enrollment details. Progress auto-saves as you move between steps.</p>
+        </div>
+        <div class="section-actions">
+          <span class="pill active">3-Step Form</span>
+        </div>
+      </div>
 
-      <!-- Stepper -->
-      <div class="stepper" id="stepper">
-        <div class="step active" data-step="1"><b>1</b>Personal</div>
-        <i class="step-line"></i>
-        <div class="step" data-step="2"><b>2</b>Academic</div>
-        <i class="step-line"></i>
-        <div class="step" data-step="3"><b>3</b>Contact</div>
+      <!-- Stepper Component -->
+      <div class="stepper-wrap">
+        <div class="stepper" id="stepper">
+          <div class="step active" data-step="1"><b>1</b>Personal Info</div>
+          <i class="step-line" id="line-1"></i>
+          <div class="step" data-step="2"><b>2</b>Academic Details</div>
+          <i class="step-line" id="line-2"></i>
+          <div class="step" data-step="3"><b>3</b>Contact & Guardian</div>
+        </div>
       </div>
 
       <div id="form-toast"></div>
 
+      <!-- Registration Form Card -->
       <form class="card form-card" id="reg-form" novalidate>
         <div class="card-head">
-          <h2 id="step-title">Step 1 of 3 · Personal details</h2>
-          <span class="muted" style="font-size:11px">Changes save when you continue.</span>
+          <h3 id="step-title" style="font-size:16px">Step 1 of 3 · Personal Information</h3>
+          <span style="font-size:12px;color:var(--text-muted)">Changes save on continue</span>
         </div>
 
-        <!-- Step 1 -->
+        <!-- Step 1: Personal -->
         <div class="form-grid step-panel" id="panel-1">
-          <div class="field"><label>Full name *</label><input name="full_name" required></div>
-          <div class="field"><label>Date of birth</label><input type="date" name="date_of_birth"></div>
+          <div class="field">
+            <label>Full Name *</label>
+            <input name="full_name" required placeholder="Enter legal full name">
+          </div>
+          <div class="field">
+            <label>Date of Birth</label>
+            <input type="date" name="date_of_birth">
+          </div>
           <div class="field">
             <label>Gender</label>
             <select name="gender">
-              <option value="">Select (optional)</option>
-              <option>Female</option><option>Male</option>
-              <option>Non-binary</option><option>Prefer not to say</option>
+              <option value="">Select gender</option>
+              <option>Female</option>
+              <option>Male</option>
+              <option>Non-binary</option>
+              <option>Prefer not to say</option>
             </select>
           </div>
-          <div class="field"><label>Mobile number *</label><input type="tel" name="phone" required></div>
+          <div class="field">
+            <label>Mobile Number *</label>
+            <input type="tel" name="phone" required placeholder="10-digit mobile">
+          </div>
         </div>
 
-        <!-- Step 2 -->
+        <!-- Step 2: Academic -->
         <div class="form-grid step-panel" id="panel-2" style="display:none">
-          <div class="field"><label>Course *</label><input name="course" required></div>
-          <div class="field"><label>Admission year *</label><input type="number" name="admission_year" min="2000" max="2100"></div>
-          <div class="field"><label>Admission number</label><input id="admission-no-field" disabled></div>
+          <div class="field">
+            <label>Admitted Course *</label>
+            <input name="course" required placeholder="e.g. B.Tech Computer Science">
+          </div>
+          <div class="field">
+            <label>Admission Year *</label>
+            <input type="number" name="admission_year" min="2000" max="2100" value="2024">
+          </div>
+          <div class="field full">
+            <label>Admission ID / Roll No</label>
+            <input id="admission-no-field" disabled>
+            <small>Allocated by University Admissions Cell</small>
+          </div>
         </div>
 
-        <!-- Step 3 -->
+        <!-- Step 3: Contact & Guardian -->
         <div class="form-grid step-panel" id="panel-3" style="display:none">
-          <div class="field full"><label>Current address</label><textarea name="address"></textarea></div>
-          <div class="field"><label>City</label><input name="city"></div>
-          <div class="field"><label>State / region</label><input name="state"></div>
-          <div class="field"><label>Postal code</label><input name="postal_code"></div>
-          <div class="field"><label>Parent / guardian name</label><input name="guardian_name"></div>
-          <div class="field"><label>Guardian mobile number</label><input name="guardian_phone"></div>
+          <div class="field full">
+            <label>Permanent Residential Address</label>
+            <textarea name="address" placeholder="Door no, street, locality"></textarea>
+          </div>
+          <div class="field">
+            <label>City</label>
+            <input name="city" placeholder="City / District">
+          </div>
+          <div class="field">
+            <label>State</label>
+            <input name="state" placeholder="State / Province">
+          </div>
+          <div class="field">
+            <label>Postal Code / PIN</label>
+            <input name="postal_code" placeholder="Postal code">
+          </div>
+          <div class="field">
+            <label>Guardian / Parent Name</label>
+            <input name="guardian_name" placeholder="Full name of guardian">
+          </div>
+          <div class="field">
+            <label>Guardian Contact Phone</label>
+            <input type="tel" name="guardian_phone" placeholder="Emergency contact phone">
+          </div>
         </div>
 
         <div class="button-row">
-          <button class="btn btn-outline" id="back-btn" type="button" style="display:none">← Previous</button>
-          <button class="btn" id="next-btn" type="submit">Save &amp; continue →</button>
-          <a class="btn btn-light" href="dashboard.html">Save &amp; exit</a>
+          <button type="button" class="btn btn-light" id="btn-back" style="display:none">← Previous Step</button>
+          <button type="button" class="btn btn-primary" id="btn-next">Next Step →</button>
+          <button type="submit" class="btn btn-primary" id="btn-save" style="display:none">Complete Registration ✓</button>
         </div>
       </form>
     </main>
@@ -116,86 +219,100 @@
 
 <script type="module">
   import { api } from '../js/api.js';
-  import { requireAuth, hideLoader, initSidebarToggle, setLoading, fillForm } from '../js/utils.js';
+  import { requireAuth, hideLoader, initSidebarToggle, fillForm, formData, showToast } from '../js/utils.js';
 
   initSidebarToggle();
 
-  let step = 1;
-  const stepTitles = ['Personal', 'Academic', 'Contact'];
-  let userData = {};
-
-  const toast  = document.getElementById('form-toast');
-  const nextBtn = document.getElementById('next-btn');
-  const backBtn = document.getElementById('back-btn');
-
-  function showMsg(msg, type = 'error') {
-    toast.innerHTML = `<div class="toast ${type}">${msg}</div>`;
-    toast.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const sidebar = document.getElementById('sidebar');
+  if (backdrop && sidebar) {
+    backdrop.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('active');
+    });
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+      backdrop.classList.toggle('active', sidebar.classList.contains('open'));
+    });
   }
 
-  function updateStepper() {
-    document.getElementById('step-title').textContent = `Step ${step} of 3 · ${stepTitles[step-1]} details`;
-    document.querySelectorAll('.step').forEach(el => {
-      const s = +el.dataset.step;
-      el.className = `step ${s === step ? 'active' : s < step ? 'done' : ''}`;
-      el.querySelector('b').textContent = s < step ? '✓' : s;
-    });
-    document.querySelectorAll('.step-panel').forEach(p => {
-      p.style.display = p.id === `panel-${step}` ? 'grid' : 'none';
-    });
-    backBtn.style.display = step > 1 ? '' : 'none';
-    nextBtn.textContent = step === 3 ? 'Save and finish' : 'Save & continue →';
-  }
+  let currentStep = 1;
+  const form = document.getElementById('reg-form');
+  const titles = [
+    'Step 1 of 3 · Personal Information',
+    'Step 2 of 3 · Academic Enrolment',
+    'Step 3 of 3 · Contact & Guardian Information',
+  ];
 
   async function init() {
     const session = await requireAuth(api);
     if (!session) return;
+    const fullName = session.user?.full_name || session.user?.admission_no || 'Student';
+    document.getElementById('topbar-name').textContent = fullName;
+    document.getElementById('topbar-avatar').textContent = (fullName[0] || 'S').toUpperCase();
+    document.getElementById('topbar-role').textContent = session.user?.admission_no || 'Student';
+
     const res = await api.registration();
     hideLoader();
-    if (!res.success) return;
-    userData = res.data.user;
-    document.getElementById('topbar-name').textContent = userData.full_name || userData.admission_no;
-    document.getElementById('topbar-avatar').textContent = (userData.full_name || 'S')[0].toUpperCase();
-    document.getElementById('admission-no-field').value = userData.admission_no || '';
-    fillForm(document.getElementById('reg-form'), userData);
-    updateStepper();
-  }
 
-  function collectData() {
-    const form = document.getElementById('reg-form');
-    const fd = new FormData(form);
-    const data = {};
-    // Merge all panels
-    document.querySelectorAll('.step-panel input, .step-panel select, .step-panel textarea').forEach(el => {
-      if (el.name && !el.disabled) data[el.name] = el.value;
-    });
-    return data;
-  }
-
-  document.getElementById('reg-form').addEventListener('submit', async e => {
-    e.preventDefault();
-    toast.innerHTML = '';
-    const data = { ...collectData(), step };
-
-    setLoading(nextBtn, true);
-    const res = await api.saveReg(data);
-    setLoading(nextBtn, false);
-
-    if (!res.success) { showMsg(res.message); return; }
-    showMsg(res.message, 'success');
-
-    if (step < 3) {
-      step++;
-      updateStepper();
-    } else {
-      setTimeout(() => window.location.href = 'dashboard.html', 900);
+    if (res.success && res.data?.registration) {
+      fillForm(form, res.data.registration);
+      document.getElementById('admission-no-field').value = res.data.user?.admission_no || '—';
     }
+
+    renderStep(1);
+  }
+
+  function renderStep(s) {
+    currentStep = s;
+    document.getElementById('step-title').textContent = titles[s - 1];
+
+    [1, 2, 3].forEach(i => {
+      const p = document.getElementById(`panel-${i}`);
+      if (p) p.style.display = i === s ? 'grid' : 'none';
+
+      const st = document.querySelector(`.step[data-step="${i}"]`);
+      if (st) {
+        st.classList.toggle('active', i === s);
+        st.classList.toggle('done', i < s);
+      }
+      const l = document.getElementById(`line-${i}`);
+      if (l) l.classList.toggle('done', i < s);
+    });
+
+    document.getElementById('btn-back').style.display = s > 1 ? 'inline-flex' : 'none';
+    document.getElementById('btn-next').style.display = s < 3 ? 'inline-flex' : 'none';
+    document.getElementById('btn-save').style.display = s === 3 ? 'inline-flex' : 'none';
+  }
+
+  document.getElementById('btn-next').addEventListener('click', async () => {
+    await saveCurrentData();
+    renderStep(currentStep + 1);
   });
 
-  backBtn.addEventListener('click', () => { if (step > 1) { step--; updateStepper(); } });
+  document.getElementById('btn-back').addEventListener('click', () => {
+    renderStep(currentStep - 1);
+  });
 
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await api.logout(); window.location.href = 'login.html';
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    await saveCurrentData();
+    showToast('Registration details saved successfully!', 'success');
+    setTimeout(() => window.location.href = 'dashboard.html', 800);
+  });
+
+  async function saveCurrentData() {
+    const data = formData(form);
+    const res = await api.saveReg(data);
+    if (res.success) {
+      showToast('Progress saved.', 'success', 2000);
+    } else {
+      showToast(res.message, 'error');
+    }
+  }
+
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    await api.logout();
+    window.location.href = 'login.html';
   });
 
   init();

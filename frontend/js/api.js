@@ -61,4 +61,17 @@ export const api = {
       return { success: false, message: 'Upload failed. Please check network connection.', data: null };
     }
   },
+
+  // ── Application Tracking ───────────────────────
+  application:     ()     => apiFetch(`${BASE}/application.php?action=get`),
+  updateAppStatus: (body) => apiFetch(`${BASE}/application.php?action=update_status`, { method:'POST', body: JSON.stringify(body) }),
+
+  // ── Fee Payments ───────────────────────────────
+  payments: ()       => apiFetch(`${BASE}/payments.php?action=list`),
+  payFee:   (body)   => apiFetch(`${BASE}/payments.php?action=pay`, { method:'POST', body: JSON.stringify(body) }),
+  receipt:  (ref)    => apiFetch(`${BASE}/payments.php?action=receipt&ref=${encodeURIComponent(ref)}`),
+
+  // ── Notifications ──────────────────────────────
+  notifications:        ()     => apiFetch(`${BASE}/notifications.php?action=list`),
+  markNotificationRead: (body) => apiFetch(`${BASE}/notifications.php?action=mark_read`, { method:'POST', body: JSON.stringify(body) }),
 };
