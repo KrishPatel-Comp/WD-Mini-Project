@@ -1,0 +1,60 @@
+# ==========================================
+# UniBridge · Git Ignore Rules
+# ==========================================
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# User Uploads (keep directories, ignore uploaded media)
+/uploads/*
+!/uploads/.gitkeep
+/backend/uploads/*
+!/backend/uploads/.gitkeep
+
+# Docker & Local Overrides
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Logs & Temporary Files
+*.log
+error_log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# IDE & Code Editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+
+# Composer & Node Dependencies (if used)
+/vendor/
+/node_modules/
+
+# Database dumps/exports (keep database.sql schema)
+*.sql.gz
+*.sql.tar.gz
+*.dump
+*.backup
+dump.sql

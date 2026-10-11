@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Profile · UniBridge Student Portal</title>
+  <meta name="description" content="View and update your student profile on UniBridge.">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="dashboard.html">
+      <span class="brand-mark">u</span>
+      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
+    </a>
+    <div class="side-label">WORKSPACE</div>
+    <nav>
+      <a class="nav-link" href="dashboard.html"><span class="icon">⌂</span> Overview</a>
+      <a class="nav-link" href="registration.html"><span class="icon">▤</span> Registration</a>
+      <a class="nav-link" href="documents.html"><span class="icon">↥</span> Documents</a>
+      <a class="nav-link active" href="profile.html"><span class="icon">◉</span> My profile</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <span class="help-icon">✦</span><b>Need a hand?</b>
+        <p>Your onboarding guide is here to help.</p>
+        <a href="mailto:admissions@unibridge.edu">Contact support ↗</a>
+      </div>
+      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
+        <span class="icon">↪</span> Sign out
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-shell">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+        <div class="crumb">Student portal <span>/</span> My profile</div>
+      </div>
+      <div class="top-user">
+        <span class="online-dot"></span>
+        <span id="topbar-name">—</span>
+        <span class="avatar" id="topbar-avatar">S</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="eyebrow">MY PROFILE</div>
+      <h1 class="page-title">Keep your details current.</h1>
+      <p class="subhead">These details are used by the admissions team while preparing your student record.</p>
+
+      <div id="form-toast"></div>
+
+      <div class="grid two-col" style="margin-top:22px">
+        <form class="card" id="profile-form" novalidate>
+          <div class="card-head">
+            <h2>Personal &amp; contact details</h2>
+            <span class="pill approved" id="profile-pct">—% complete</span>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Full name</label><input name="full_name" required></div>
+            <div class="field"><label>Mobile number</label><input name="phone" required></div>
+            <div class="field full">
+              <label>Email address</label>
+              <input id="email-display" disabled>
+              <small>Email changes require admission support.</small>
+            </div>
+            <div class="field full"><label>Address</label><textarea name="address"></textarea></div>
+            <div class="field"><label>City</label><input name="city"></div>
+            <div class="field"><label>State</label><input name="state"></div>
+            <div class="field"><label>Postal code</label><input name="postal_code"></div>
+            <div class="field"><label>Guardian name</label><input name="guardian_name"></div>
+            <div class="field"><label>Guardian mobile</label><input name="guardian_phone"></div>
+          </div>
+          <div class="button-row">
+            <button class="btn" id="save-btn" type="submit">Save profile changes</button>
+          </div>
+        </form>
+
+        <section class="card">
+          <div class="card-head"><h2>Student record</h2></div>
+          <div class="activity">
+            <div class="activity-row"><div><small class="muted">Admission number</small><b id="rec-admission" style="display:block;margin-top:5px">—</b></div></div>
+            <div class="activity-row"><div><small class="muted">Course</small><b id="rec-course" style="display:block;margin-top:5px">—</b></div></div>
+            <div class="activity-row"><div><small class="muted">Admission year</small><b id="rec-year" style="display:block;margin-top:5px">—</b></div></div>
+          </div>
+          <div class="notice" style="margin-top:16px">
+            Your login account is secured separately from your profile details. Use "Forgot password" from the sign-in page if you need to reset access.
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script type="module">
+  import { api } from '../js/api.js';
+  import { requireAuth, hideLoader, initSidebarToggle, setLoading, fillForm } from '../js/utils.js';
+
+  initSidebarToggle();
+
+  const toast   = document.getElementById('form-toast');
+  const saveBtn = document.getElementById('save-btn');
+
+  function showMsg(msg, type = 'success') {
+    toast.innerHTML = `<div class="toast ${type}">${msg}</div>`;
+  }
+
+  async function init() {
+    const session = await requireAuth(api);
+    if (!session) return;
+    const res = await api.profile();
+    hideLoader();
+    if (!res.success) return;
+
+    const { user: u, readiness: r } = res.data;
+    document.getElementById('topbar-name').textContent = u.full_name || u.admission_no;
+    document.getElementById('topbar-avatar').textContent = (u.full_name || 'S')[0].toUpperCase();
+    document.getElementById('email-display').value = u.email || '';
+    document.getElementById('profile-pct').textContent = `${r.profile}% complete`;
+    document.getElementById('rec-admission').textContent = u.admission_no || '—';
+    document.getElementById('rec-course').textContent    = u.course || '—';
+    document.getElementById('rec-year').textContent      = u.admission_year || '—';
+
+    fillForm(document.getElementById('profile-form'), u);
+  }
+
+  document.getElementById('profile-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    toast.innerHTML = '';
+    const form = e.currentTarget;
+    const data = {};
+    form.querySelectorAll('input:not([disabled]), textarea').forEach(el => {
+      if (el.name) data[el.name] = el.value;
+    });
+
+    setLoading(saveBtn, true);
+    const res = await api.saveProfile(data);
+    setLoading(saveBtn, false);
+
+    showMsg(res.message, res.success ? 'success' : 'error');
+    if (res.success) {
+      document.getElementById('topbar-name').textContent = data.full_name || '—';
+      document.getElementById('topbar-avatar').textContent = (data.full_name || 'S')[0].toUpperCase();
+    }
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await api.logout(); window.location.href = 'login.html';
+  });
+
+  init();
+</script>
+</body>
+</html>

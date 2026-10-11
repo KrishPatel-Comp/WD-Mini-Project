@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · UniBridge Student Portal</title>
+  <meta name="description" content="Your UniBridge student dashboard — track registration, documents and readiness in one place.">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="dashboard.html">
+      <span class="brand-mark">u</span>
+      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
+    </a>
+    <div class="side-label">WORKSPACE</div>
+    <nav>
+      <a class="nav-link active" href="dashboard.html"><span class="icon">⌂</span> Overview</a>
+      <a class="nav-link" href="registration.html"><span class="icon">▤</span> Registration</a>
+      <a class="nav-link" href="documents.html"><span class="icon">↥</span> Documents</a>
+      <a class="nav-link" href="profile.html"><span class="icon">◉</span> My profile</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <span class="help-icon">✦</span>
+        <b>Need a hand?</b>
+        <p>Your onboarding guide is here to help.</p>
+        <a href="mailto:admissions@unibridge.edu">Contact support ↗</a>
+      </div>
+      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
+        <span class="icon">↪</span> Sign out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-shell">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+        <div class="crumb">Student portal <span>/</span> Overview</div>
+      </div>
+      <div class="top-user">
+        <span class="online-dot"></span>
+        <span id="topbar-name">—</span>
+        <span class="avatar" id="topbar-avatar">S</span>
+      </div>
+    </header>
+
+    <main class="content" id="main-content">
+      <!-- Populated by JS -->
+    </main>
+  </div>
+</div>
+
+<script type="module">
+  import { api } from '../js/api.js';
+  import { requireAuth, hideLoader, initSidebarToggle, setRingProgress, pillHTML, fmtDate } from '../js/utils.js';
+
+  initSidebarToggle();
+
+  async function init() {
+    const session = await requireAuth(api);
+    if (!session) return;
+
+    const res = await api.dashboard();
+    hideLoader();
+
+    if (!res.success) { document.getElementById('main-content').innerHTML = `<div class="empty">${res.message}</div>`; return; }
+
+    const { user: u, readiness: r, activity } = res.data;
+    const docs = r.documents;
+
+    // Update topbar
+    const firstName = (u.full_name || 'student').split(' ')[0];
+    document.getElementById('topbar-name').textContent = u.full_name || u.admission_no;
+    document.getElementById('topbar-avatar').textContent = (u.full_name || 'S')[0].toUpperCase();
+
+    // Render page
+    document.getElementById('main-content').innerHTML = `
+      <div class="hero">
+        <div>
+          <div class="eyebrow">YOUR CAMPUS JOURNEY</div>
+          <h1>Good to see you, ${firstName}.</h1>
+          <p>Small steps today bring your first day closer.</p>
+        </div>
+        <div class="hero-art">✳</div>
+      </div>
+
+      <div class="grid stats" style="margin-bottom:18px">
+        <div class="card stat-card">
+          <div class="stat-icon">▤</div>
+          <div><small>Registration profile</small><strong>${r.profile}%</strong></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-icon">↥</div>
+          <div><small>Documents approved</small><strong>${r.docs} <span style="font-size:13px;color:#89958c">/ 4</span></strong></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-icon">✦</div>
+          <div><small>Readiness score</small><strong>${r.score}%</strong></div>
+        </div>
+      </div>
+
+      <div class="grid two-col">
+        <section class="card">
+          <div class="card-head">
+            <h2>Your readiness</h2>
+            <a class="text-link" href="registration.html">Continue setup →</a>
+          </div>
+          <div class="readiness">
+            <div class="ring" id="readiness-ring" style="--p:${r.score}">
+              <strong>${r.score}%</strong>
+            </div>
+            <div>
+              <b>${r.score >= 90 ? 'Almost there!' : r.score >= 50 ? "You're making progress" : "Let's get started"}</b>
+              <p style="font-size:13px;color:var(--text-muted);margin-top:4px">Complete your student details and get all four documents approved to reach 100% readiness.</p>
+            </div>
+          </div>
+          <div class="checklist">
+            <div class="check-item"><span class="check">✓</span> Student account created <span class="muted" style="margin-left:auto">Complete</span></div>
+            <div class="check-item"><span class="check ${r.profile === 100 ? '' : 'pending'}">${r.profile === 100 ? '✓' : '•'}</span> Profile details <span class="muted" style="margin-left:auto">${r.profile}%</span></div>
+            <div class="check-item"><span class="check ${r.docs === 4 ? '' : 'pending'}">${r.docs === 4 ? '✓' : '•'}</span> Documents approved <span class="muted" style="margin-left:auto">${r.docs} / 4</span></div>
+          </div>
+          <div class="button-row">
+            <a class="btn" href="registration.html">Continue registration →</a>
+            <a class="btn btn-light" href="documents.html">Manage documents</a>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>Document tracker</h2><a class="text-link" href="documents.html">View all</a></div>
+          ${buildDocTracker(docs)}
+          <a href="documents.html" class="btn btn-light" style="margin-top:10px">Upload a document ↑</a>
+        </section>
+      </div>
+
+      <div class="grid two-col" style="margin-top:18px">
+        <section class="card">
+          <div class="card-head"><h2>Recent activity</h2><span class="muted" style="font-size:11px">Your latest updates</span></div>
+          ${buildActivity(activity)}
+        </section>
+        <section class="card">
+          <div class="card-head"><h2>Student snapshot</h2><a class="text-link" href="profile.html">Edit profile →</a></div>
+          <div class="activity">
+            <div class="activity-row"><div><small class="muted">Admission number</small><b style="display:block;margin-top:5px">${u.admission_no}</b></div></div>
+            <div class="activity-row"><div><small class="muted">Course</small><b style="display:block;margin-top:5px">${u.course || 'Add your course'}</b></div></div>
+            <div class="activity-row"><div><small class="muted">Email</small><b style="display:block;margin-top:5px">${u.email}</b></div></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="footnote">UniBridge · Your onboarding journey, in one place.</div>
+    `;
+  }
+
+  function buildDocTracker(docs) {
+    const labels = { photo: 'Profile photo', identity: 'Identity proof', marksheet: 'Latest marksheet', transfer_certificate: 'Transfer certificate' };
+    return Object.entries(labels).map(([key, label]) => {
+      const d = docs[key];
+      const status = d?.status || 'Not uploaded';
+      const pct = d ? (status === 'Approved' ? 100 : 55) : 0;
+      const color = d && status === 'Approved' ? '#82ad65' : '#d4b46a';
+      return `
+        <div class="progress-row">
+          <div class="progress-label"><span>${label}</span><span>${status}</span></div>
+          <div class="track"><i style="width:${pct}%;background:${color}"></i></div>
+        </div>`;
+    }).join('');
+  }
+
+  function buildActivity(events) {
+    if (!events || events.length === 0) return `<div class="empty">Your activity will appear here as you complete onboarding.</div>`;
+    return `<div class="activity">${events.map(ev => `
+      <div class="activity-row">
+        <span class="activity-mark">✦</span>
+        <div>
+          <b>${ev.action}</b>
+          <small>${ev.detail} · ${fmtDate(ev.created_at)}</small>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await api.logout();
+    window.location.href = 'login.html';
+  });
+
+  init();
+</script>
+</body>
+</html>

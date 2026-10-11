@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create Account · UniBridge Student Portal</title>
+  <meta name="description" content="Create your UniBridge student account to begin the onboarding journey.">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="page-loader" class="page-loader">
+  <span class="loader-mark">✦</span>
+</div>
+
+<div class="public-shell">
+  <div style="width:100%;max-width:900px">
+    <a class="brand public-brand" href="login.html">
+      <span class="brand-mark">u</span>
+      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
+    </a>
+
+    <div class="auth-layout">
+      <section class="auth-copy">
+        <div class="eyebrow">YOUR NEXT CHAPTER STARTS HERE</div>
+        <h1>One bridge.<br>All the way to<br>your first day.</h1>
+        <p>Get your student journey in order, one small step at a time.</p>
+        <div class="auth-points">
+          <span>✓ Track registration progress</span>
+          <span>✓ Upload and follow documents</span>
+          <span>✓ Keep your student details in one place</span>
+        </div>
+      </section>
+
+      <section class="auth-panel">
+        <h2>Create your account</h2>
+        <p>Start your student onboarding journey.</p>
+
+        <div id="form-toast"></div>
+
+        <form id="signup-form" novalidate>
+          <div class="field">
+            <label for="full_name">Full name</label>
+            <input id="full_name" name="full_name" required autocomplete="name" placeholder="Your full name">
+          </div>
+          <div class="field">
+            <label for="phone">Mobile number</label>
+            <input id="phone" name="phone" required type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+          </div>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input id="email" name="email" required type="email" autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="course">Course</label>
+            <select id="course" name="course" required>
+              <option value="">Choose your course</option>
+              <option>B.Sc. Computer Science</option>
+              <option>BCA</option>
+              <option>B.Com</option>
+              <option>B.A. Economics</option>
+              <option>BBA</option>
+              <option>B.Tech. Information Technology</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Admission ID</label>
+            <input disabled value="Generated automatically after account creation">
+            <small>Your unique UniBridge ID will appear after registration.</small>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="password">Password</label>
+              <input id="password" class="password-field" name="password" required minlength="8" type="password">
+            </div>
+            <div class="field">
+              <label for="confirm_password">Confirm password</label>
+              <input id="confirm_password" class="password-field" name="confirm_password" required minlength="8" type="password">
+            </div>
+          </div>
+          <label class="show-password" style="margin-bottom:14px">
+            <input type="checkbox" id="show-pw"> Show passwords
+          </label>
+          <button class="btn" id="signup-btn" type="submit" style="width:100%">Create student account →</button>
+        </form>
+
+        <div class="auth-foot">Already registered? <a href="login.html">Sign in</a></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { api } from '../js/api.js';
+  import { redirectIfLoggedIn, setLoading, hideLoader } from '../js/utils.js';
+
+  async function init() {
+    await redirectIfLoggedIn(api);
+    hideLoader();
+  }
+  init();
+
+  // Show/hide password toggle
+  document.getElementById('show-pw').addEventListener('change', e => {
+    const type = e.target.checked ? 'text' : 'password';
+    document.querySelectorAll('.password-field').forEach(f => f.type = type);
+  });
+
+  const form  = document.getElementById('signup-form');
+  const btn   = document.getElementById('signup-btn');
+  const toast = document.getElementById('form-toast');
+
+  function showMsg(msg, type = 'error') {
+    toast.innerHTML = `<div class="toast ${type}">${msg}</div>`;
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    toast.innerHTML = '';
+    const data = {
+      full_name:        form.full_name.value.trim(),
+      phone:            form.phone.value.trim(),
+      email:            form.email.value.trim(),
+      course:           form.course.value,
+      password:         form.password.value,
+      confirm_password: form.confirm_password.value,
+    };
+    if (!data.full_name || !data.email || !data.course || !data.phone || !data.password) {
+      showMsg('Please fill in all required fields.'); return;
+    }
+
+    setLoading(btn, true);
+    const res = await api.signup(data);
+    setLoading(btn, false);
+
+    if (res.success) {
+      showMsg(`Account created! Admission ID: <b>${res.data.admission_no}</b>`, 'success');
+      setTimeout(() => window.location.href = res.data.redirect, 1200);
+    } else {
+      showMsg(res.message);
+    }
+  });
+</script>
+</body>
+</html>

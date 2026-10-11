@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forgot Password · UniBridge</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+<div class="public-shell">
+  <div style="width:100%;max-width:900px">
+    <a class="brand public-brand" href="login.html">
+      <span class="brand-mark">u</span>
+      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
+    </a>
+    <div class="auth-layout">
+      <section class="auth-copy">
+        <div class="eyebrow">ACCOUNT RECOVERY</div>
+        <h1>A fresh start<br>is just a few<br>steps away.</h1>
+        <p>Enter the email address connected to your student account. We'll help you set a new password.</p>
+      </section>
+      <section class="auth-panel">
+        <h2>Forgot password?</h2>
+        <p>Request a secure, one-time password reset link.</p>
+        <div id="form-toast"></div>
+        <form id="forgot-form" novalidate>
+          <div class="field">
+            <label for="email">Registered email</label>
+            <input id="email" name="email" type="email" required autocomplete="email">
+          </div>
+          <button class="btn" id="submit-btn" type="submit" style="width:100%">Create reset link →</button>
+        </form>
+        <div class="auth-foot"><a href="login.html">← Back to sign in</a></div>
+      </section>
+    </div>
+  </div>
+</div>
+<script type="module">
+  import { api } from '../js/api.js';
+  import { hideLoader } from '../js/utils.js';
+  hideLoader();
+
+  const form  = document.getElementById('forgot-form');
+  const btn   = document.getElementById('submit-btn');
+  const toast = document.getElementById('form-toast');
+
+  function msg(m, type = 'info') { toast.innerHTML = `<div class="toast ${type}">${m}</div>`; }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = form.email.value.trim();
+    if (!email) { msg('Please enter your registered email.', 'error'); return; }
+    btn.disabled = true; btn.textContent = 'Sending…';
+    const res = await api.forgot({ email });
+    btn.disabled = false; btn.textContent = 'Create reset link →';
+    if (res.success && res.data?.reset_link) {
+      msg(`Reset link (local dev): <a href="${res.data.reset_link}" style="color:var(--accent)">${res.data.reset_link}</a>`, 'success');
+    } else {
+      msg(res.message, res.success ? 'info' : 'error');
+    }
+  });
+</script>
+</body>
+</html>

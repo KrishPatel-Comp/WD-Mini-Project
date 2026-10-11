@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reset Password · UniBridge</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+<div class="public-shell">
+  <div style="width:100%;max-width:900px">
+    <a class="brand public-brand" href="login.html">
+      <span class="brand-mark">u</span>
+      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
+    </a>
+    <div class="auth-layout">
+      <section class="auth-copy">
+        <div class="eyebrow">ACCOUNT RECOVERY</div>
+        <h1>Make it<br>yours again.</h1>
+        <p>Choose a strong password you'll remember for your next visit.</p>
+      </section>
+      <section class="auth-panel">
+        <h2>Choose a new password</h2>
+        <p>Use at least eight characters.</p>
+        <div id="form-toast"></div>
+        <form id="reset-form" novalidate>
+          <input type="hidden" id="token-field" name="token">
+          <div class="field">
+            <label for="password">New password</label>
+            <input id="password" name="password" type="password" required minlength="8">
+          </div>
+          <div class="field">
+            <label for="confirm_password">Confirm new password</label>
+            <input id="confirm_password" name="confirm_password" type="password" required minlength="8">
+          </div>
+          <button class="btn" id="submit-btn" type="submit" style="width:100%">Save new password →</button>
+        </form>
+        <div class="auth-foot"><a href="login.html">Back to sign in</a></div>
+      </section>
+    </div>
+  </div>
+</div>
+<script type="module">
+  import { api } from '../js/api.js';
+  import { setLoading, hideLoader } from '../js/utils.js';
+
+  const params = new URLSearchParams(window.location.search);
+  const token  = params.get('token') || '';
+  document.getElementById('token-field').value = token;
+
+  const form  = document.getElementById('reset-form');
+  const btn   = document.getElementById('submit-btn');
+  const toast = document.getElementById('form-toast');
+
+  hideLoader();
+
+  if (!token) {
+    toast.innerHTML = `<div class="toast error">Invalid or missing reset token. <a href="forgot.html">Request a new link</a>.</div>`;
+    btn.disabled = true;
+  }
+
+  function msg(m, type = 'error') { toast.innerHTML = `<div class="toast ${type}">${m}</div>`; }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const password         = form.password.value;
+    const confirm_password = form.confirm_password.value;
+    if (password !== confirm_password) { msg('Passwords do not match.'); return; }
+    if (password.length < 8)           { msg('Password must be at least 8 characters.'); return; }
+
+    setLoading(btn, true);
+    const res = await api.reset({ token, password, confirm_password });
+    setLoading(btn, false);
+
+    msg(res.message, res.success ? 'success' : 'error');
+    if (res.success) setTimeout(() => window.location.href = res.data.redirect, 1000);
+  });
+</script>
+</body>
+</html>

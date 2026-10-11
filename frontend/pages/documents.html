@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documents · UniBridge Student Portal</title>
+  <meta name="description" content="Upload and track your student documents on UniBridge.">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="dashboard.html">
+      <span class="brand-mark">u</span>
+      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
+    </a>
+    <div class="side-label">WORKSPACE</div>
+    <nav>
+      <a class="nav-link" href="dashboard.html"><span class="icon">⌂</span> Overview</a>
+      <a class="nav-link" href="registration.html"><span class="icon">▤</span> Registration</a>
+      <a class="nav-link active" href="documents.html"><span class="icon">↥</span> Documents</a>
+      <a class="nav-link" href="profile.html"><span class="icon">◉</span> My profile</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <span class="help-icon">✦</span><b>Need a hand?</b>
+        <p>Your onboarding guide is here to help.</p>
+        <a href="mailto:admissions@unibridge.edu">Contact support ↗</a>
+      </div>
+      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
+        <span class="icon">↪</span> Sign out
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-shell">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+        <div class="crumb">Student portal <span>/</span> Documents</div>
+      </div>
+      <div class="top-user">
+        <span class="online-dot"></span>
+        <span id="topbar-name">—</span>
+        <span class="avatar" id="topbar-avatar">S</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="eyebrow">DOCUMENT CENTRE</div>
+      <h1 class="page-title">A clear view of every upload.</h1>
+      <p class="subhead">Upload what you need and follow each document from upload to approval.</p>
+
+      <div class="notice">
+        Accepted formats: PDF, JPG, PNG · Maximum file size: 5 MB · Replacing a document sends it back for review.
+      </div>
+
+      <div id="global-toast"></div>
+
+      <div class="grid doc-grid" id="doc-grid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Document record table -->
+      <section class="card" style="margin-top:18px">
+        <div class="card-head">
+          <h2>Document record</h2>
+          <span class="muted" style="font-size:11px">Live status from your document track</span>
+        </div>
+        <table class="table">
+          <thead>
+            <tr><th>Document</th><th>Uploaded</th><th>Status</th></tr>
+          </thead>
+          <tbody id="doc-table-body">
+            <tr><td colspan="3" class="empty">Loading…</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script type="module">
+  import { api } from '../js/api.js';
+  import { requireAuth, hideLoader, initSidebarToggle, showToast, fmtDate, pillHTML } from '../js/utils.js';
+
+  initSidebarToggle();
+
+  const DOC_TYPES = {
+    photo:                'Profile photo',
+    identity:             'Identity proof',
+    marksheet:            'Latest marksheet',
+    transfer_certificate: 'Transfer certificate',
+  };
+  const DOC_HELP = {
+    photo:                'A recent, clear passport-style image.',
+    identity:             'Government-issued ID or Aadhaar card.',
+    marksheet:            'Your latest academic marksheet.',
+    transfer_certificate: 'Transfer or leaving certificate, if applicable.',
+  };
+
+  async function init() {
+    const session = await requireAuth(api);
+    if (!session) return;
+    document.getElementById('topbar-name').textContent = session.user?.full_name || '—';
+    document.getElementById('topbar-avatar').textContent = (session.user?.full_name || 'S')[0].toUpperCase();
+
+    await loadDocuments();
+    hideLoader();
+  }
+
+  async function loadDocuments() {
+    const res = await api.documents();
+    if (!res.success) { showToast(res.message, 'error'); return; }
+    renderDocCards(res.data.documents);
+    renderDocTable(res.data.documents);
+  }
+
+  function renderDocCards(docs) {
+    const grid = document.getElementById('doc-grid');
+    grid.innerHTML = Object.entries(DOC_TYPES).map(([key, title]) => {
+      const d = docs[key];
+      const status = d?.status || 'Not uploaded';
+      const statusCls = status.toLowerCase().replace(' ', '-');
+      return `
+        <article class="card doc-card" id="card-${key}">
+          <span class="pill ${statusCls === 'not-uploaded' ? '' : statusCls} doc-status">${status}</span>
+          <h3>${title}</h3>
+          <p>${DOC_HELP[key]}</p>
+          ${d ? `<p><b>${d.original_name}</b><br><small>Uploaded ${fmtDate(d.uploaded_at)}</small></p>` : ''}
+          <form class="upload-form" data-type="${key}">
+            <input class="file-input" type="file" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
+            <div class="button-row">
+              <button class="btn btn-light upload-btn" type="submit">${d ? 'Replace document' : 'Upload document'} ↑</button>
+            </div>
+          </form>
+        </article>`;
+    }).join('');
+
+    // Attach upload handlers
+    document.querySelectorAll('.upload-form').forEach(form => {
+      form.addEventListener('submit', handleUpload);
+    });
+  }
+
+  function renderDocTable(docs) {
+    const tbody = document.getElementById('doc-table-body');
+    const entries = Object.values(docs);
+    if (entries.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="3" class="empty">No documents uploaded yet.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = entries.map(d => `
+      <tr>
+        <td>${DOC_TYPES[d.document_type] || d.document_type}</td>
+        <td>${fmtDate(d.uploaded_at)}</td>
+        <td>${pillHTML(d.status)}</td>
+      </tr>`).join('');
+  }
+
+  async function handleUpload(e) {
+    e.preventDefault();
+    const form     = e.currentTarget;
+    const type     = form.dataset.type;
+    const fileInput = form.querySelector('input[type="file"]');
+    const btn      = form.querySelector('.upload-btn');
+
+    if (!fileInput.files[0]) { showToast('Please choose a file first.', 'error'); return; }
+
+    const fd = new FormData();
+    fd.append('document_type', type);
+    fd.append('document', fileInput.files[0]);
+
+    const origText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Uploading…';
+    btn.disabled = true;
+
+    const res = await api.upload(fd);
+
+    btn.innerHTML = origText;
+    btn.disabled = false;
+
+    if (res.success) {
+      showToast(res.message, 'success');
+      await loadDocuments(); // refresh
+    } else {
+      showToast(res.message, 'error');
+    }
+  }
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await api.logout(); window.location.href = 'login.html';
+  });
+
+  init();
+</script>
+</body>
+</html>

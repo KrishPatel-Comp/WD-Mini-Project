@@ -1,0 +1,28 @@
+# Version Control
+.git/
+.gitignore
+
+# Environment & Secrets
+.env
+.env.*
+
+# Documentation & Readmes
+README.md
+
+# Docker-related files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# User uploaded files (mounted via Docker volumes instead)
+uploads/*
+!uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Editor & System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

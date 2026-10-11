@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registration · UniBridge Student Portal</title>
+  <meta name="description" content="Complete your student registration on UniBridge in three easy steps.">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="page-loader" class="page-loader"><span class="loader-mark">✦</span></div>
+
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="dashboard.html">
+      <span class="brand-mark">u</span>
+      <span class="brand-name">UniBridge<small>STUDENT PORTAL</small></span>
+    </a>
+    <div class="side-label">WORKSPACE</div>
+    <nav>
+      <a class="nav-link" href="dashboard.html"><span class="icon">⌂</span> Overview</a>
+      <a class="nav-link active" href="registration.html"><span class="icon">▤</span> Registration</a>
+      <a class="nav-link" href="documents.html"><span class="icon">↥</span> Documents</a>
+      <a class="nav-link" href="profile.html"><span class="icon">◉</span> My profile</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="help-card">
+        <span class="help-icon">✦</span><b>Need a hand?</b>
+        <p>Your onboarding guide is here to help.</p>
+        <a href="mailto:admissions@unibridge.edu">Contact support ↗</a>
+      </div>
+      <button class="nav-link logout" id="logout-btn" style="width:100%;background:none;border:none;cursor:pointer;text-align:left">
+        <span class="icon">↪</span> Sign out
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-shell">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+        <div class="crumb">Student portal <span>/</span> Registration</div>
+      </div>
+      <div class="top-user">
+        <span class="online-dot"></span>
+        <span id="topbar-name">—</span>
+        <span class="avatar" id="topbar-avatar">S</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="eyebrow">STUDENT REGISTRATION</div>
+      <h1 class="page-title">Your details, your pace.</h1>
+      <p class="subhead">A few details help us prepare your student record. Your progress saves as you go.</p>
+
+      <!-- Stepper -->
+      <div class="stepper" id="stepper">
+        <div class="step active" data-step="1"><b>1</b>Personal</div>
+        <i class="step-line"></i>
+        <div class="step" data-step="2"><b>2</b>Academic</div>
+        <i class="step-line"></i>
+        <div class="step" data-step="3"><b>3</b>Contact</div>
+      </div>
+
+      <div id="form-toast"></div>
+
+      <form class="card form-card" id="reg-form" novalidate>
+        <div class="card-head">
+          <h2 id="step-title">Step 1 of 3 · Personal details</h2>
+          <span class="muted" style="font-size:11px">Changes save when you continue.</span>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="form-grid step-panel" id="panel-1">
+          <div class="field"><label>Full name *</label><input name="full_name" required></div>
+          <div class="field"><label>Date of birth</label><input type="date" name="date_of_birth"></div>
+          <div class="field">
+            <label>Gender</label>
+            <select name="gender">
+              <option value="">Select (optional)</option>
+              <option>Female</option><option>Male</option>
+              <option>Non-binary</option><option>Prefer not to say</option>
+            </select>
+          </div>
+          <div class="field"><label>Mobile number *</label><input type="tel" name="phone" required></div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="form-grid step-panel" id="panel-2" style="display:none">
+          <div class="field"><label>Course *</label><input name="course" required></div>
+          <div class="field"><label>Admission year *</label><input type="number" name="admission_year" min="2000" max="2100"></div>
+          <div class="field"><label>Admission number</label><input id="admission-no-field" disabled></div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="form-grid step-panel" id="panel-3" style="display:none">
+          <div class="field full"><label>Current address</label><textarea name="address"></textarea></div>
+          <div class="field"><label>City</label><input name="city"></div>
+          <div class="field"><label>State / region</label><input name="state"></div>
+          <div class="field"><label>Postal code</label><input name="postal_code"></div>
+          <div class="field"><label>Parent / guardian name</label><input name="guardian_name"></div>
+          <div class="field"><label>Guardian mobile number</label><input name="guardian_phone"></div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn btn-outline" id="back-btn" type="button" style="display:none">← Previous</button>
+          <button class="btn" id="next-btn" type="submit">Save &amp; continue →</button>
+          <a class="btn btn-light" href="dashboard.html">Save &amp; exit</a>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
+
+<script type="module">
+  import { api } from '../js/api.js';
+  import { requireAuth, hideLoader, initSidebarToggle, setLoading, fillForm } from '../js/utils.js';
+
+  initSidebarToggle();
+
+  let step = 1;
+  const stepTitles = ['Personal', 'Academic', 'Contact'];
+  let userData = {};
+
+  const toast  = document.getElementById('form-toast');
+  const nextBtn = document.getElementById('next-btn');
+  const backBtn = document.getElementById('back-btn');
+
+  function showMsg(msg, type = 'error') {
+    toast.innerHTML = `<div class="toast ${type}">${msg}</div>`;
+    toast.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function updateStepper() {
+    document.getElementById('step-title').textContent = `Step ${step} of 3 · ${stepTitles[step-1]} details`;
+    document.querySelectorAll('.step').forEach(el => {
+      const s = +el.dataset.step;
+      el.className = `step ${s === step ? 'active' : s < step ? 'done' : ''}`;
+      el.querySelector('b').textContent = s < step ? '✓' : s;
+    });
+    document.querySelectorAll('.step-panel').forEach(p => {
+      p.style.display = p.id === `panel-${step}` ? 'grid' : 'none';
+    });
+    backBtn.style.display = step > 1 ? '' : 'none';
+    nextBtn.textContent = step === 3 ? 'Save and finish' : 'Save & continue →';
+  }
+
+  async function init() {
+    const session = await requireAuth(api);
+    if (!session) return;
+    const res = await api.registration();
+    hideLoader();
+    if (!res.success) return;
+    userData = res.data.user;
+    document.getElementById('topbar-name').textContent = userData.full_name || userData.admission_no;
+    document.getElementById('topbar-avatar').textContent = (userData.full_name || 'S')[0].toUpperCase();
+    document.getElementById('admission-no-field').value = userData.admission_no || '';
+    fillForm(document.getElementById('reg-form'), userData);
+    updateStepper();
+  }
+
+  function collectData() {
+    const form = document.getElementById('reg-form');
+    const fd = new FormData(form);
+    const data = {};
+    // Merge all panels
+    document.querySelectorAll('.step-panel input, .step-panel select, .step-panel textarea').forEach(el => {
+      if (el.name && !el.disabled) data[el.name] = el.value;
+    });
+    return data;
+  }
+
+  document.getElementById('reg-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    toast.innerHTML = '';
+    const data = { ...collectData(), step };
+
+    setLoading(nextBtn, true);
+    const res = await api.saveReg(data);
+    setLoading(nextBtn, false);
+
+    if (!res.success) { showMsg(res.message); return; }
+    showMsg(res.message, 'success');
+
+    if (step < 3) {
+      step++;
+      updateStepper();
+    } else {
+      setTimeout(() => window.location.href = 'dashboard.html', 900);
+    }
+  });
+
+  backBtn.addEventListener('click', () => { if (step > 1) { step--; updateStepper(); } });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await api.logout(); window.location.href = 'login.html';
+  });
+
+  init();
+</script>
+</body>
+</html>
